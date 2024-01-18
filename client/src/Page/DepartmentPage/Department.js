@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './Department.css';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import Alert from 'react-bootstrap/Alert';
 import Form from 'react-bootstrap/Form';
+import axios from 'axios';
 
 function Department() {
    const baseUrlDepartment='http://localhost:5148/api/Departments';
@@ -23,12 +25,28 @@ function Department() {
   const handleCloseDelete = () => setShowDelete(false);
   const handleShowDelete = () => setShowDelete(true);
 
-  //get all department 
-  function getAllDepartments(){
-    const get_url =`${baseUrlDepartment}/getAllDepartment`;
-    
 
-  }
+
+  //get all department 
+  const [departmentData,setDepartmentData]=useState([]);
+
+    //fetching all employees
+    const fetchDepartmentData=async ()=>{
+      
+      try{
+      const get_url=`${baseUrlDepartment}/getAllDepartment`; //end point
+      const response = await axios.get(get_url);
+      setDepartmentData(response.data);
+      }catch(error) {
+           console.error("Error if fetching employe data",error);
+      }
+    }
+
+    useEffect(()=>{
+        fetchDepartmentData();
+    },[])
+
+
 
 
 
@@ -43,32 +61,34 @@ function Department() {
         <Table striped bordered hover className='DepartmentTable'>
       <thead>
         <tr>
-          <th>#</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Username</th>
+          <th>Department Code</th>
+          <th>Department Name</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Jacob</td>
-          <td>Thornton</td>
-          <td>@fat</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td colSpan={2}>Larry the Bird</td>
-          <td>@twitter</td>
-        </tr>
+        {
+          departmentData && departmentData.length>0?
+          departmentData.map((department)=>
+                  <tr key={department.departmentId}>
+                    <td>{department.departmentCode}</td>
+                    <td>{department.departmentName}</td>
+                    <td>Otto</td>
+                </tr>
+          ):""
+        }
       </tbody>
     </Table>
+    { departmentData && departmentData.length === 0 ?
+           <Alert variant="danger"  dismissible>
+           <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+           <p>
+             No data or Serve is not up & runnig at this moment. 
+            </p>
+            <Button variant="light" onClick={()=>fetchDepartmentData()}>Fetch</Button>
+         </Alert>:
+          ""
+       }
   </div>
 
 

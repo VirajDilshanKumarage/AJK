@@ -12,6 +12,8 @@ import { FaCalendar, FaLeaf } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { redirectDocument } from 'react-router-dom';
+import Card from 'react-bootstrap/Card';
+import Alert from 'react-bootstrap/Alert';
 
 function Employee() {
   //base usrl for employee model
@@ -31,6 +33,8 @@ function Employee() {
   const [showDelete, setShowDelete] = useState(false);
   const handleCloseDelete = () => setShowDelete(false);
   const handleShowDelete = () => setShowDelete(true);
+
+ 
 
   //popup the calender
   const datePickerRef = useState(null);
@@ -568,10 +572,23 @@ function Employee() {
                 </td>
               </tr>
             ))
-            :
-            "Loading..."}
+            :""
+
+            }
         </tbody>
+        
       </Table>
+      { employeeData && employeeData.length === 0 ?
+           <Alert variant="danger"  dismissible>
+           <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+           <p>
+             No data or Serve is not up & runnig at this moment. 
+            </p>
+            <Button variant="light" onClick={()=>fetchEmployeeData()}>Fetch</Button>
+         </Alert>:
+          ""
+       }
+     
     </div>
     
     {/* edit modal */}
