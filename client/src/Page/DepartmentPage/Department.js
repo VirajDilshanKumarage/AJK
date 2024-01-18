@@ -145,13 +145,13 @@ function Department() {
         <Modal.Header closeButton>
           <Modal.Title>Delete Department</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Comfirm the Delete</Modal.Body>
+        <Modal.Body>Do you need to permernatly delete this employee?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseDelete}>
-            Close
+            Cancle
           </Button>
           <Button variant="danger" onClick={handleCloseDelete}>
-            Delete
+            Yes
           </Button>
         </Modal.Footer>
       </Modal>

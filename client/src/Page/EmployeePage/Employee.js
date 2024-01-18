@@ -213,6 +213,15 @@ function Employee() {
           }
 
           function nicValidation(data){
+
+            for (const employee of employeeData) {
+              if (employee.nicNumber === data.nicNumber) {
+                  setErrorMessageNIC("NIC already used by another employee");
+                  return false;
+              }
+          }
+
+          
             if(data.nicNumber.length===12 || data.nicNumber.length===10){
               setErrorMessageNIC('');
               return true;
@@ -284,22 +293,25 @@ function Employee() {
           }
 
           function salaryValidation(data){
-            if(data.salary>500.00 && /^\d+(\.\d+)?$/.test(data.salary)){
+            if(data.salary>=500.00 && /^\d+(\.\d+)?$/.test(data.salary)){
               setErrorMessageSalary('')
               return true;
             }
-            setErrorMessageSalary('Enter valid number');
+            setErrorMessageSalary('Enter valid number (min 500.00 Rs)');
             return false;
           }
 
 
           function departmentValidation(data){
-            if(data.departmentId===''){
-              setErrorMessageDepartment('Select existing department');
-              return false;
-            }
-            setErrorMessageDepartment('');
-            return true;
+                      for (const department of departmentData) {
+                        if (department.departmentId == data.departmentId) {
+                            setErrorMessageDepartment('');
+                            return true;
+                        }
+                      }
+
+                setErrorMessageDepartment('Select an existing department');
+                return false;
           }
         
         
@@ -323,7 +335,7 @@ function Employee() {
               
            }else{
                
-               toast.error("Employee details are voilate the validation");
+               toast.error("Employee details are invalid");
                return;
            }
 
@@ -393,7 +405,7 @@ function Employee() {
           "dateOfBirth": dateOfBirthEdit,
           "gender": genderEdit,
           "salary": salaryEdit,
-          "departmentId": departmentIdEdit
+          "departmentId": departmentIdEdit 
         
       }
        
@@ -418,6 +430,20 @@ function Employee() {
      
 
       function nicValidationEdit(updatedData){
+
+        for (const employee of employeeData) {
+          // Skip the current employee being updated
+          if (employee.employeeId === _employeeId) {
+              continue;
+          }
+      
+          if (employee.nicNumber === updatedData.nicNumber) {
+              setErrorMessageNICEdit("NIC already used by another employee");
+              return false;
+          }
+      }
+      
+
         if(updatedData.nicNumber.length===12 || updatedData.nicNumber.length===10){
           setErrorMessageNICEdit('');
           return true;
@@ -489,22 +515,26 @@ function Employee() {
       }
 
       function salaryValidation(updatedData){
-        if(updatedData.salary>500.00 && /^\d+(\.\d+)?$/.test(updatedData.salary)){
+        if(updatedData.salary>=500.00 && /^\d+(\.\d+)?$/.test(updatedData.salary)){
           setErrorMessageSalaryEdit('')
           return true;
         }
-        setErrorMessageSalaryEdit('Enter valid number');
+        setErrorMessageSalaryEdit('Enter valid number (min 500.00 Rs');
         return false;
       }
 
 
       function departmentValidation(updatedData){
-         if( updatedData.departmentId===''){
-          setErrorMessageDepartmentEdit('Select a existing department');
-          return false;
-         }
-         setErrorMessageDepartmentEdit('');
-          return true;
+
+            for (const department of departmentData) {
+                    if (department.departmentId == updatedData.departmentId) {
+                        setErrorMessageDepartmentEdit('');
+                        return true;
+                    }
+            }
+
+            setErrorMessageDepartmentEdit('Select an existing department');
+            return false;
       }
       
       
@@ -528,7 +558,7 @@ function Employee() {
 
         }
         else{
-          toast.error("Employee details are voilate the validation");
+          toast.error("Employee details are invalid");
           return;
         }
 
@@ -929,13 +959,13 @@ function Employee() {
         <Modal.Header closeButton>
           <Modal.Title>Delete Employee</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Comfirm the Delete</Modal.Body>
+        <Modal.Body>Do you need to permernatly delete this employee ?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseDelete}>
-            Close
+            Cancle
           </Button>
           <Button variant="danger" onClick={()=>handleDelete()}>
-            Delete
+            Yes
           </Button>
         </Modal.Footer>
       </Modal>
