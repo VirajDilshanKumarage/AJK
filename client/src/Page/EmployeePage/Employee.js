@@ -6,6 +6,10 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import SplitButton from 'react-bootstrap/SplitButton';
 import DatePicker from 'react-datepicker'; // Import the date picker library
 import 'react-datepicker/dist/react-datepicker.css';
 import { FaCalendar, FaLeaf } from 'react-icons/fa';
@@ -16,6 +20,34 @@ import Card from 'react-bootstrap/Card';
 import Alert from 'react-bootstrap/Alert';
 
 function Employee() {
+  /**
+   * This function written to handle all the mappings and data validation for for employee model
+   */
+
+  /** BEGIN fetchDepartmentData()  */
+  const baseUrlDepartment='http://localhost:5148/api/Departments';
+  const [departmentData,setDepartmentData]=useState([]);
+
+    const fetchDepartmentData=async ()=>{
+      
+      try{
+      const get_url=`${baseUrlDepartment}/getAllDepartment`; //end point
+      const response = await axios.get(get_url);
+      setDepartmentData(response.data);
+      }catch(error) {
+           console.error("Error if fetching employe data",error);
+      }
+    }
+
+    useEffect(()=>{
+      fetchDepartmentData();
+    },[])
+  /** End fetchDepartmentData()  */
+
+
+
+
+
   //base usrl for employee model
   const baseUrlEmployee = 'http://localhost:5148/api/Employees';
 
@@ -262,6 +294,11 @@ function Employee() {
 
 
           function departmentValidation(data){
+            if(data.departmentId===''){
+              setErrorMessageDepartment('Select existing department');
+              return false;
+            }
+            setErrorMessageDepartment('');
             return true;
           }
         
@@ -342,7 +379,7 @@ function Employee() {
   const handleUpdate=()=>{
     
 
-      
+       
       const UpdateEmployee =(_employeeId)=>{
       const put_url = `${baseUrlEmployee}/updateEmployee/${_employeeId}`;
   
@@ -462,7 +499,12 @@ function Employee() {
 
 
       function departmentValidation(updatedData){
-        return true;
+         if( updatedData.departmentId===''){
+          setErrorMessageDepartmentEdit('Select a existing department');
+          return false;
+         }
+         setErrorMessageDepartmentEdit('');
+          return true;
       }
       
       
@@ -590,160 +632,12 @@ function Employee() {
        }
      
     </div>
-    
-    {/* edit modal */}
-    <Modal show={showEdit} onHide={handleCloseEdit}>
-        <Modal.Header closeButton>
-          <Modal.Title>Update Employee</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-        <div>{errorMessageEdit && <div style={{ color: 'red' }}>{errorMessageEdit}</div>}</div>
-        <Form.Label htmlFor="nic">nic</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="nicEdit"
-                    aria-describedby="nicHelpBlock"
-                    value={nicNumberEdit}
-                    onChange={(e)=>setNicNumberEdit(e.target.value)}
-                  />
-                  {errorMessageNICEdit && <div style={{ color: 'red' }}>{errorMessageNICEdit}</div>}
-                  <br></br>
-
-                  <Form.Label htmlFor="firstname">firstName</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="firstNameEdit"
-                    aria-describedby="firstNameHelpBlock"
-                    value={firstNameEdit}
-                    onChange={(e)=>setFirstNameEdit(e.target.value)}
-                  />
-                  {errorMessageFirstNameEdit && <div style={{ color: 'red' }}>{errorMessageFirstNameEdit}</div>}
-                  <br></br>
-
-                  <Form.Label htmlFor="lastName">lastName</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="lastNameEdit"
-                    aria-describedby="lastNameHelpBlock"
-                    value={lastNameEdit}
-                    onChange={(e)=>setLastNameEdit(e.target.value)}
-                  />
-                  {errorMessageLastNameEdit && <div style={{ color: 'red' }}>{errorMessageLastNameEdit}</div>}
-
-
-                  <br></br>
-                  <Form.Label htmlFor="email">emailAddress</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="emailEdit"
-                    aria-describedby="emailHelpBlock"
-                    value={emailAddressEdit}
-                    onChange={(e)=>setEmailAddressEdit(e.target.value)}
-                  />
-                  {errorMessageEmailAddressEdit && <div style={{ color: 'red' }}>{errorMessageEmailAddressEdit}</div>}
-
-                   <br></br>
-                  <Form.Label htmlFor="mobile">mobileNumber</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="mobileEdit"
-                    aria-describedby="mobileHelpBlock"
-                    value={mobileNumberEdit}
-                    onChange={(e)=>setMobileNumberEdit(e.target.value)}
-                  />
-                  {errorMessageMobileNumberEdit && <div style={{ color: 'red' }}>{errorMessageMobileNumberEdit}</div>}
-
-                  
-                  <br></br>
-                  <Form.Label htmlFor="DOB">Date of Birth</Form.Label>
-                  <div className="input-group">
-                    <DatePicker
-                      id="DOBEdit"
-                      selected={dateOfBirthEdit}
-                      onChange={(date) => setDateOfBirth(date)}
-                      dateFormat="yyyy-MM-dd"
-                      className="form-control"
-                      ref={datePickerRef}
-                    />
-                    <div className="input-group-append" onClick={openDatePicker}>
-                      <span className="input-group-text">
-                        <FaCalendar />
-                      </span>
-                    </div>
-                  </div>
-                  {errorMessageDateOfBirthEdit && <div style={{ color: 'red' }}>{errorMessageDateOfBirthEdit}</div>}
-      
-
-                  
-                  <br/>
-                  <Form.Label htmlFor="gender">gender</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="genderEdit"
-                    aria-describedby="genderHelpBlock"
-                    value={genderEdit}
-                    onChange={(e)=>setGenderEdit(e.target.value)}
-                  />
-                  {errorMessageGenderEdit && <div style={{ color: 'red' }}>{errorMessageGenderEdit}</div>}
-
-
-                  
-                   <br></br>
-                  <Form.Label htmlFor="salary">salary</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="salaryEdit"
-                    aria-describedby="salaryHelpBlock"
-                    value={salaryEdit}
-                    onChange={(e)=>setSalaryEdit(e.target.value)}
-                  />
-                  {errorMessageSalaryEdit && <div style={{ color: 'red' }}>{errorMessageSalaryEdit}</div>}
-
-                  
-                  <br></br>
-                  <Form.Label htmlFor="departmentId">department</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="departmentIdEdit"
-                    aria-describedby="departmentHelpBlock"
-                    value={departmentIdEdit}
-                    onChange={(e)=>setDepartmentIdEdit(e.target.value)}
-                  />
-                  {errorMessageDepartmentEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentEdit}</div>}
-                  
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseEdit}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={()=>handleUpdate()}>
-            Update
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      
-      
-      
-      {/* delete modal */}
-    <Modal show={showDelete} onHide={handleCloseDelete}>
-        <Modal.Header closeButton>
-          <Modal.Title>Delete Employee</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Comfirm the Delete</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseDelete}>
-            Close
-          </Button>
-          <Button variant="danger" onClick={()=>handleDelete()}>
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
 
 
 
-        {/* add modal */}
-    <Modal show={showAdd} onHide={handleCloseAdd}>
+
+     {/* add modal */}
+     <Modal show={showAdd} onHide={handleCloseAdd}>
         <Modal.Header closeButton>
           <Modal.Title>Add Employee</Modal.Title>
         </Modal.Header>
@@ -828,14 +722,18 @@ function Employee() {
 
                   
                   <br/>
-                  <Form.Label htmlFor="gender">gender</Form.Label>
-                  <Form.Control
-                    type="text"
+                  <Form.Label htmlFor="gender">Gender</Form.Label>
+                  <Form.Select
                     id="genderSave"
                     aria-describedby="genderHelpBlock"
                     value={genderSave}
-                    onChange={(e)=>setGenderSave(e.target.value)}
-                  />
+                    onChange={(e) => setGenderSave(e.target.value)}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    
+                  </Form.Select>
                   {errorMessageGender && <div style={{ color: 'red' }}>{errorMessageGender}</div>}
 
 
@@ -853,14 +751,20 @@ function Employee() {
 
                   
                   <br></br>
-                  <Form.Label htmlFor="departmentId">department</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="departmentIdSave"
-                    aria-describedby="departmentIdHelpBlock"
+                  <Form.Label htmlFor="department">Department</Form.Label>
+                  <Form.Select
+                    id="departmentSave"
+                    aria-describedby="departmentHelpBlock"
                     value={departmentIdSave}
-                    onChange={(e)=>setDepartmentIdSave(e.target.value)}
-                  />
+                    onChange={(e) => setDepartmentIdSave(e.target.value)}
+                  >
+                    <option value=''>Select department</option>
+                    {departmentData.map((department) => (
+                      <option key={department.departmentId} value={department.departmentId}>
+                        {department.departmentName}
+                      </option>
+                    ))}
+                  </Form.Select>
                   {errorMessageDepartment && <div style={{ color: 'red' }}>{errorMessageDepartment}</div>}
                   
 
@@ -875,6 +779,170 @@ function Employee() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+
+    
+    {/* edit modal */}
+    <Modal show={showEdit} onHide={handleCloseEdit}>
+        <Modal.Header closeButton>
+          <Modal.Title>Update Employee</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        <div>{errorMessageEdit && <div style={{ color: 'red' }}>{errorMessageEdit}</div>}</div>
+        <Form.Label htmlFor="nic">nic</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="nicEdit"
+                    aria-describedby="nicHelpBlock"
+                    value={nicNumberEdit}
+                    onChange={(e)=>setNicNumberEdit(e.target.value)}
+                  />
+                  {errorMessageNICEdit && <div style={{ color: 'red' }}>{errorMessageNICEdit}</div>}
+                  <br></br>
+
+                  <Form.Label htmlFor="firstname">firstName</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="firstNameEdit"
+                    aria-describedby="firstNameHelpBlock"
+                    value={firstNameEdit}
+                    onChange={(e)=>setFirstNameEdit(e.target.value)}
+                  />
+                  {errorMessageFirstNameEdit && <div style={{ color: 'red' }}>{errorMessageFirstNameEdit}</div>}
+                  <br></br>
+
+                  <Form.Label htmlFor="lastName">lastName</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="lastNameEdit"
+                    aria-describedby="lastNameHelpBlock"
+                    value={lastNameEdit}
+                    onChange={(e)=>setLastNameEdit(e.target.value)}
+                  />
+                  {errorMessageLastNameEdit && <div style={{ color: 'red' }}>{errorMessageLastNameEdit}</div>}
+
+
+                  <br></br>
+                  <Form.Label htmlFor="email">emailAddress</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="emailEdit"
+                    aria-describedby="emailHelpBlock"
+                    value={emailAddressEdit}
+                    onChange={(e)=>setEmailAddressEdit(e.target.value)}
+                  />
+                  {errorMessageEmailAddressEdit && <div style={{ color: 'red' }}>{errorMessageEmailAddressEdit}</div>}
+
+                   <br></br>
+                  <Form.Label htmlFor="mobile">mobileNumber</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="mobileEdit"
+                    aria-describedby="mobileHelpBlock"
+                    value={mobileNumberEdit}
+                    onChange={(e)=>setMobileNumberEdit(e.target.value)}
+                  />
+                  {errorMessageMobileNumberEdit && <div style={{ color: 'red' }}>{errorMessageMobileNumberEdit}</div>}
+
+                  
+                  <br></br>
+                  <Form.Label htmlFor="DOB">Date of Birth</Form.Label>
+                  <div className="input-group">
+                    <DatePicker
+                      id="DOBEdit"
+                      selected={dateOfBirthEdit}
+                      onChange={(date) => setDateOfBirthEdit(date)}
+                      dateFormat="yyyy-MM-dd"
+                      className="form-control"
+                      ref={datePickerRef}
+                    />
+                    <div className="input-group-append" onClick={openDatePicker}>
+                      <span className="input-group-text">
+                        <FaCalendar />
+                      </span>
+                    </div>
+                  </div>
+                  {errorMessageDateOfBirthEdit && <div style={{ color: 'red' }}>{errorMessageDateOfBirthEdit}</div>}
+      
+
+                  
+                  <br/>
+                  <Form.Label htmlFor="gender">Gender</Form.Label>
+                  <Form.Select
+                    id="genderEdit"
+                    aria-describedby="genderHelpBlock"
+                    value={genderEdit}
+                    onChange={(e) => setGenderEdit(e.target.value)}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </Form.Select>
+                  {errorMessageGenderEdit && <div style={{ color: 'red' }}>{errorMessageGenderEdit}</div>}
+
+
+                  
+                   <br></br>
+                  <Form.Label htmlFor="salary">salary</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="salaryEdit"
+                    aria-describedby="salaryHelpBlock"
+                    value={salaryEdit}
+                    onChange={(e)=>setSalaryEdit(e.target.value)}
+                  />
+                  {errorMessageSalaryEdit && <div style={{ color: 'red' }}>{errorMessageSalaryEdit}</div>}
+
+                  
+                  <br></br>
+                  <Form.Label htmlFor="department">Department</Form.Label>
+                  <Form.Select
+                    id="departmentEdit"
+                    aria-describedby="departmentHelpBlock"
+                    value={departmentIdEdit}
+                    onChange={(e) => setDepartmentIdEdit(e.target.value)}
+                  >
+                    <option value=''>Select department</option>
+                    {departmentData.map((department) => (
+                      <option key={department.departmentId} value={department.departmentId}>
+                        {department.departmentName}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  {errorMessageDepartmentEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentEdit}</div>}
+                  
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseEdit}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={()=>handleUpdate()}>
+            Update
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      
+      
+      
+      {/* delete modal */}
+    <Modal show={showDelete} onHide={handleCloseDelete}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Employee</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Comfirm the Delete</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseDelete}>
+            Close
+          </Button>
+          <Button variant="danger" onClick={()=>handleDelete()}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+
+
+       
       
       
       

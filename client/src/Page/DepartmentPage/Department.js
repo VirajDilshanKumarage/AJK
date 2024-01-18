@@ -30,7 +30,6 @@ function Department() {
   //get all department 
   const [departmentData,setDepartmentData]=useState([]);
 
-    //fetching all employees
     const fetchDepartmentData=async ()=>{
       
       try{
@@ -42,12 +41,21 @@ function Department() {
       }
     }
 
+    
     useEffect(()=>{
         fetchDepartmentData();
     },[])
 
+   //handle edit departmnet
+   const handleEdit=(departmentid)=>{
+    alert(departmentid);
+   }
 
 
+   //handle delete department
+   const handleDelete=(departmentId)=>{
+    alert(departmentId);
+   }
 
 
 
@@ -73,7 +81,10 @@ function Department() {
                   <tr key={department.departmentId}>
                     <td>{department.departmentCode}</td>
                     <td>{department.departmentName}</td>
-                    <td>Otto</td>
+                    <td>
+                         <Button variant='primary' onClick={()=>{handleEdit(department.departmentId)}} >Edit</Button> &nbsp;
+                         <Button variant='danger' onClick={()=>{handleDelete(department.departmentId)}}>Delete</Button>
+                    </td>
                 </tr>
           ):""
         }
