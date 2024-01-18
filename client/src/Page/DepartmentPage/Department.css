@@ -1,9 +1,10 @@
-.EmployeeContent{
+
+.DepartmentContent{
     padding: 20px;
     border-style: solid;
     margin: 10px;
 }
 
-.EmployeeTable{
+.DepartmentTable{
     margin-top: 10px;
 }

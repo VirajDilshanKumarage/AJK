@@ -8,9 +8,14 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import DatePicker from 'react-datepicker'; // Import the date picker library
 import 'react-datepicker/dist/react-datepicker.css';
-import { FaCalendar } from 'react-icons/fa';
+import { FaCalendar, FaLeaf } from 'react-icons/fa';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { redirectDocument } from 'react-router-dom';
 
 function Employee() {
+  //base usrl for employee model
+  const baseUrlEmployee = 'http://localhost:5148/api/Employees';
 
   //add modal
   const [showAdd, setShowAdd] = useState(false);
@@ -37,6 +42,32 @@ function Employee() {
   };
 
 
+  //validation const for save form
+  const [errorMessage,setErrorMessage] = useState('');
+  const [errorMessageNIC,setErrorMessageNIC] = useState('');
+  const [errorMessageFirstName,setErrorMessageFirstName] = useState('');
+  const [errorMessageLastName,setErrorMessageLastName] = useState('');
+  const [errorMessageEmailAddress,setErrorMessageEmailAddress] = useState('');
+  const [errorMessageMobileNumber,setErrorMessageMobileNumber] = useState('');
+  const [errorMessageDateOfBirth,setErrorMessageDateOfBirth] = useState('');
+  const [errorMessageGender,setErrorMessageGender] = useState('');
+  const [errorMessageSalary,setErrorMessageSalary] = useState('');
+  const [errorMessageDepartment,setErrorMessageDepartment] = useState('');
+
+
+   //validation const for edit form
+   const [errorMessageEdit,setErrorMessageEdit] = useState('');
+   const [errorMessageNICEdit,setErrorMessageNICEdit] = useState('');
+   const [errorMessageFirstNameEdit,setErrorMessageFirstNameEdit] = useState('');
+   const [errorMessageLastNameEdit,setErrorMessageLastNameEdit] = useState('');
+   const [errorMessageEmailAddressEdit,setErrorMessageEmailAddressEdit] = useState('');
+   const [errorMessageMobileNumberEdit,setErrorMessageMobileNumberEdit] = useState('');
+   const [errorMessageDateOfBirthEdit,setErrorMessageDateOfBirthEdit] = useState('');
+   const [errorMessageGenderEdit,setErrorMessageGenderEdit] = useState('');
+   const [errorMessageSalaryEdit,setErrorMessageSalaryEdit] = useState('');
+   const [errorMessageDepartmentEdit,setErrorMessageDepartmentEdit] = useState('');
+
+
   //save employee data
   const [nicNumberSave,setNicNumberSave] = useState('');
   const [firstNameSave,setFirstNameSave] = useState('');
@@ -45,7 +76,7 @@ function Employee() {
   const [mobileNumberSave,setMobileNumberSave] = useState('');
   const [dateOfBirthSave,setDateOfBirthSave] = useState(null);
   const [genderSave,setGenderSave] = useState('');
-  const [salarySave,setSalarySave] = useState(0);
+  const [salarySave,setSalarySave] = useState(0.0);
   const [departmentIdSave,setDepartmentIdSave] = useState(0);
 
   //edit employee data
@@ -56,7 +87,7 @@ function Employee() {
   const [mobileNumberEdit,setMobileNumberEdit] = useState('');
   const [dateOfBirthEdit,setDateOfBirthEdit] = useState(null);
   const [genderEdit,setGenderEdit] = useState('');
-  const [salaryEdit,setSalaryEdit] = useState(0);
+  const [salaryEdit,setSalaryEdit] = useState(0.0);
   const [departmentIdEdit,setDepartmentIdEdit] = useState(0);
 
   //here I create the cons to store the employee id that wanted to update it set in handleEdit() and then use the value in hadleUpdate()
@@ -97,9 +128,14 @@ function Employee() {
 
   //fetching all employees
   const fetchEmployeeData=async ()=>{
-        const get_url="http://localhost:5148/api/Employees/getAllEmployees";
+      
+        try{
+        const get_url=`${baseUrlEmployee}/getAllEmployees`; //end point
         const response = await axios.get(get_url);
         setEmployeeData(response.data);
+        }catch(error) {
+             console.error("Error if fetching employe data",error);
+        }
   }
 
   useEffect(()=>{
@@ -111,7 +147,8 @@ function Employee() {
 
   //adding
   const handleSave = ()=>{
-         const post_url ="http://localhost:5148/api/Employees/saveNewEmployee";
+      
+         const post_url =`${baseUrlEmployee}/saveNewEmployee`; // end point
          const data = {
           "nicNumber": nicNumberSave,
           "firstName": firstNameSave,
@@ -124,24 +161,142 @@ function Employee() {
           "departmentId": departmentIdSave
         }
         console.log(data); // just render data in console
-        axios.post(post_url,data)
-        .then((result)=>{
-          fetchEmployeeData();
-          handleCloseAdd();
-          clearSave();
-        })
+
+        
+
+        // validation for add for
+          function isDataFilled(data) {
+            for (const value of Object.values(data)) {
+              if (value === null || value === undefined) {
+                 setErrorMessage("All fields are required");
+                 return false;
+              }
+            }
+            setErrorMessage('');
+            return true;
+          }
+
+          function nicValidation(data){
+            if(data.nicNumber.length===12 || data.nicNumber.length===10){
+              setErrorMessageNIC('');
+              return true;
+            }
+            setErrorMessageNIC("Enter a valid nic number");
+            return false;
+          }
+
+
+          function firstNameValidation(data){
+            if(data.firstName.length>1 && !/\d/.test(data.firstName)){
+               setErrorMessageFirstName('');
+               return true
+            }
+            setErrorMessageFirstName("Enter valid name for first name");
+            return false
+          }
+
+          function lastNameValidation(data){
+            if(data.lastName.length>1 && !/\d/.test(data.lastName)){
+               setErrorMessageLastName('');
+               return true
+            }
+            setErrorMessageLastName("Enter valid name for last name");
+            return false
+          }
+
+          function emailAddressValidation(data){
+            if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.emailAddress)){
+              setErrorMessageEmailAddress('');
+              return true;
+            }
+            setErrorMessageEmailAddress("Enter valid email");
+            return false;
+          }
+          
+
+          function mobileNumberValidation(data){
+            if(data.mobileNumber.length===10 &&  /^\d+$/.test(data.mobileNumber)){
+              setErrorMessageMobileNumber('');
+              return true;
+            }
+            setErrorMessageMobileNumber('Enter valid mobile number eg: 0777111222');
+            return false;
+          }
+
+          function dateOfBirthValidation(data){
+
+            const dateString = data.dateOfBirth;
+            // Parse the date string
+            const dateObject = new Date(dateString);
+            // Format the date to "YYYY-MM-DD"
+            const formattedDate = dateObject.toISOString().split('T')[0];
+            if( /^\d{4}-\d{2}-\d{2}$/.test(formattedDate)){
+              setErrorMessageDateOfBirth('');
+              return true;
+            }
+            setErrorMessageDateOfBirth("Date format is not valid");
+            return false;
+          }
+
+          function genderValidation(data){
+             if(data.gender.toLowerCase()==='male' || data.gender.toLowerCase()==='female'){
+                  setErrorMessageGender('');
+                  return true;
+             }
+             setErrorMessageGender('Enter valid value');
+             return false;
+          }
+
+          function salaryValidation(data){
+            if(data.salary>500.00 && /^\d+(\.\d+)?$/.test(data.salary)){
+              setErrorMessageSalary('')
+              return true;
+            }
+            setErrorMessageSalary('Enter valid number');
+            return false;
+          }
+
+
+          function departmentValidation(data){
+            return true;
+          }
+        
+        
+       
+
+           if(isDataFilled(data) && nicValidation(data) && firstNameValidation(data) && lastNameValidation(data) && emailAddressValidation(data) 
+              && mobileNumberValidation(data) && dateOfBirthValidation(data) && genderValidation(data) && salaryValidation(data) && departmentValidation(data)){
+
+                    try{
+                      axios.post(post_url,data)
+                      .then((result)=>{
+                        fetchEmployeeData();
+                        handleCloseAdd();
+                        clearSave();
+                        toast.success("new employee addedd successfully");
+                    })
+                }catch(error){
+                    console.error("Error in save data",error);
+
+                  }
+              
+           }else{
+               
+               toast.error("Employee details are voilate the validation");
+               return;
+           }
+
+
+         
+           
   }
 
 
-  //editing just open the updat modal and fill the current data
-  const handleEdit = (_employeeId)=>{ 
-    
-     handleShowEdit();
-     setEmpID(_employeeId); //set the empID to use in handleUpdate() 
-
-    const getAllEmployeeById =(_employeeId)=>{
-      const getById_url =`http://localhost:5148/api/Employees/getEmployeeById/${_employeeId}`;
-
+ //get employee by id
+  const [NameOfEmployee, setNameOfEmployee] =useState(''); //set the name of the employe to use in delete toast to show employee's name
+  const getEmployeeById =(_employeeId)=>{
+    const getById_url =`${baseUrlEmployee}/getEmployeeById/${_employeeId}`;
+      try{
       axios.get(getById_url)
       .then((result) => {
 
@@ -156,10 +311,24 @@ function Employee() {
         setGenderEdit(employee.gender); // Fix: Use setGender instead of setDateOfBirth
         setSalaryEdit(employee.salary);
         setDepartmentIdEdit(employee.departmentName); // Fix: Use setDepartment instead of setEmailAddress
-      })
-    }
 
-    getAllEmployeeById(_employeeId);  
+
+        setNameOfEmployee(employee.firstName+" "+employee.lastName);
+        
+      })
+    }catch(error) {
+        console.error("Error in get employee by id",error)
+    }
+  }
+
+
+  //editing :just open the updat modal and fill the current data
+  const handleEdit = (_employeeId)=>{ 
+    
+     handleShowEdit();
+     setEmpID(_employeeId); //set the empID to use in handleUpdate() 
+
+     getEmployeeById(_employeeId);  
     
     
   }
@@ -167,10 +336,11 @@ function Employee() {
 
   //handle update this is the fuction to update data in database
   const handleUpdate=()=>{
+    
 
       
       const UpdateEmployee =(_employeeId)=>{
-      const put_url = `http://localhost:5148/api/Employees/updateEmployee/${_employeeId}`;
+      const put_url = `${baseUrlEmployee}/updateEmployee/${_employeeId}`;
   
       const updatedData={
         
@@ -187,17 +357,141 @@ function Employee() {
       }
        
       console.log(updatedData);
-  
-      axios.put(put_url,updatedData)
-      .then((result)=>{
-          fetchEmployeeData();
-          clearEdit();
-      })
+
+      
+
+      // validation for edit for
+      function isDataFilled(updatedData) {
+        const requiredFields = ['nicNumber', 'firstName', 'lastName', 'emailAddress', 'mobileNumber', 'dateOfBirth', 'gender', 'salary', 'departmentId'];
+        for (const field of requiredFields) {
+            if (!updatedData[field]) {
+                setErrorMessageEdit("All fields are required");
+                return false;
+            }
+        }
+        setErrorMessageEdit('');
+        return true;
+     }
+    
+
+     
+
+      function nicValidationEdit(updatedData){
+        if(updatedData.nicNumber.length===12 || updatedData.nicNumber.length===10){
+          setErrorMessageNICEdit('');
+          return true;
+        }
+        setErrorMessageNICEdit("Enter a valid nic number");
+        return false;
       }
+
+
+      function firstNameValidation(updatedData){
+        if(updatedData.firstName.length>1 && !/\d/.test(updatedData.firstName)){
+           setErrorMessageFirstNameEdit('');
+           return true
+        }
+        setErrorMessageFirstNameEdit("Enter valid name for first name");
+        return false
+      }
+
+      function lastNameValidation(updatedData){
+        if(updatedData.lastName.length>1 && !/\d/.test(updatedData.lastName)){
+           setErrorMessageLastNameEdit('');
+           return true
+        }
+        setErrorMessageLastNameEdit("Enter valid name for last name");
+        return false
+      }
+
+      function emailAddressValidation(updatedData){
+        if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(updatedData.emailAddress)){
+          setErrorMessageEmailAddressEdit('');
+          return true;
+        }
+        setErrorMessageEmailAddressEdit("Enter valid email");
+        return false;
+      }
+      
+
+      function mobileNumberValidation(updatedData){
+        if(updatedData.mobileNumber.length===10 &&  /^\d+$/.test(updatedData.mobileNumber)){
+          setErrorMessageMobileNumberEdit('');
+          return true;
+        }
+        setErrorMessageMobileNumberEdit('Enter valid mobile number eg: 0777111222');
+        return false;
+      }
+
+      function dateOfBirthValidation(updatedData){
+
+        const dateString = updatedData.dateOfBirth;
+        // Parse the date string
+        const dateObject = new Date(dateString);
+        // Format the date to "YYYY-MM-DD"
+        const formattedDate = dateObject.toISOString().split('T')[0];
+        if( /^\d{4}-\d{2}-\d{2}$/.test(formattedDate)){
+          setErrorMessageDateOfBirthEdit('');
+          return true;
+        }
+        setErrorMessageDateOfBirthEdit("Date format is not valid");
+        return false;
+      }
+
+      function genderValidation(updatedData){
+         if(updatedData.gender.toLowerCase()==='male' || updatedData.gender.toLowerCase()==='female'){
+              setErrorMessageGenderEdit('');
+              return true;
+         }
+         setErrorMessageGenderEdit('Enter valid value');
+         return false;
+      }
+
+      function salaryValidation(updatedData){
+        if(updatedData.salary>500.00 && /^\d+(\.\d+)?$/.test(updatedData.salary)){
+          setErrorMessageSalaryEdit('')
+          return true;
+        }
+        setErrorMessageSalaryEdit('Enter valid number');
+        return false;
+      }
+
+
+      function departmentValidation(updatedData){
+        return true;
+      }
+      
+      
+      if(isDataFilled(updatedData) && nicValidationEdit(updatedData) && firstNameValidation(updatedData) && lastNameValidation(updatedData) && emailAddressValidation(updatedData) 
+      && mobileNumberValidation(updatedData) && dateOfBirthValidation(updatedData) && genderValidation(updatedData) && salaryValidation(updatedData) && departmentValidation(updatedData)){
+
+          try{
+            axios.put(put_url,updatedData)
+            .then((result)=>{
+                fetchEmployeeData();
+                clearEdit();
+                toast.success("update successfully");
+            })
+          }catch(error){
+            console.error("Error in update (end point)",error);
+          }
+
+          
+          handleCloseEdit();
+          setEmpID(0); // once update is complete then reset the empID
+
+        }
+        else{
+          toast.error("Employee details are voilate the validation");
+          return;
+        }
+
+    }
+
+    UpdateEmployee(empID);
+     
   
-      UpdateEmployee(empID);
-      handleCloseEdit();
-      setEmpID(0); // once update is complete then reset the empID
+      
 
   }
 
@@ -207,21 +501,38 @@ function Employee() {
   const [empIDToDelete,setempIDToDelete] =useState(0);
   //deleting 
   const handleDelete = ()=>{
-      const delete_url =`http://localhost:5148/api/Employees/deleteEmployee/${empIDToDelete}`; 
+      
+      
+      const delete_url =`${baseUrlEmployee}/deleteEmployee/${empIDToDelete}`; 
+
+      try{
       axios.delete(delete_url)
       .then((result)=>{
           console.log(result);
           fetchEmployeeData();
           setempIDToDelete(0); // reset the employeeIDToDelete
           handleCloseDelete();
+          toast.warning(NameOfEmployee.concat("'s information is permernatly deleted"));
+          setNameOfEmployee(null);
+          console.log(NameOfEmployee);
       })
+    }catch(error){
+      console.error("Error in delete (end point)",error);
+    }
+
+      
   }
 
 
+  
+
+
   return (
-    <><div className='Content'>
+    <>
+    <ToastContainer />
+    <div className='EmployeeContent'>
       <h5>Employee Details</h5> <Button variant="success" onClick={()=>handleShowAdd()}>Add Employee</Button>
-      <Table striped bordered hover className='Table'>
+      <Table striped bordered hover className='EmployeeTable'>
         <thead>
           <tr>
             <th>NIC</th>
@@ -253,7 +564,7 @@ function Employee() {
                 <td>{employee.departmentName}</td>
                 <td colSpan={2}>
                   <Button variant="primary" onClick={() => handleEdit(employee.employeeId)}>Edit</Button> &nbsp;
-                  <Button variant="danger" onClick={() => {setempIDToDelete(employee.employeeId); handleShowDelete()}}>Delete</Button>
+                  <Button variant="danger" onClick={() => {getEmployeeById(employee.employeeId); setempIDToDelete(employee.employeeId); handleShowDelete();}}>Delete</Button>
                 </td>
               </tr>
             ))
@@ -269,6 +580,7 @@ function Employee() {
           <Modal.Title>Update Employee</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+        <div>{errorMessageEdit && <div style={{ color: 'red' }}>{errorMessageEdit}</div>}</div>
         <Form.Label htmlFor="nic">nic</Form.Label>
                   <Form.Control
                     type="text"
@@ -277,6 +589,7 @@ function Employee() {
                     value={nicNumberEdit}
                     onChange={(e)=>setNicNumberEdit(e.target.value)}
                   />
+                  {errorMessageNICEdit && <div style={{ color: 'red' }}>{errorMessageNICEdit}</div>}
                   <br></br>
 
                   <Form.Label htmlFor="firstname">firstName</Form.Label>
@@ -287,7 +600,7 @@ function Employee() {
                     value={firstNameEdit}
                     onChange={(e)=>setFirstNameEdit(e.target.value)}
                   />
-
+                  {errorMessageFirstNameEdit && <div style={{ color: 'red' }}>{errorMessageFirstNameEdit}</div>}
                   <br></br>
 
                   <Form.Label htmlFor="lastName">lastName</Form.Label>
@@ -298,6 +611,7 @@ function Employee() {
                     value={lastNameEdit}
                     onChange={(e)=>setLastNameEdit(e.target.value)}
                   />
+                  {errorMessageLastNameEdit && <div style={{ color: 'red' }}>{errorMessageLastNameEdit}</div>}
 
 
                   <br></br>
@@ -309,6 +623,7 @@ function Employee() {
                     value={emailAddressEdit}
                     onChange={(e)=>setEmailAddressEdit(e.target.value)}
                   />
+                  {errorMessageEmailAddressEdit && <div style={{ color: 'red' }}>{errorMessageEmailAddressEdit}</div>}
 
                    <br></br>
                   <Form.Label htmlFor="mobile">mobileNumber</Form.Label>
@@ -319,6 +634,7 @@ function Employee() {
                     value={mobileNumberEdit}
                     onChange={(e)=>setMobileNumberEdit(e.target.value)}
                   />
+                  {errorMessageMobileNumberEdit && <div style={{ color: 'red' }}>{errorMessageMobileNumberEdit}</div>}
 
                   
                   <br></br>
@@ -338,6 +654,7 @@ function Employee() {
                       </span>
                     </div>
                   </div>
+                  {errorMessageDateOfBirthEdit && <div style={{ color: 'red' }}>{errorMessageDateOfBirthEdit}</div>}
       
 
                   
@@ -350,6 +667,7 @@ function Employee() {
                     value={genderEdit}
                     onChange={(e)=>setGenderEdit(e.target.value)}
                   />
+                  {errorMessageGenderEdit && <div style={{ color: 'red' }}>{errorMessageGenderEdit}</div>}
 
 
                   
@@ -362,6 +680,7 @@ function Employee() {
                     value={salaryEdit}
                     onChange={(e)=>setSalaryEdit(e.target.value)}
                   />
+                  {errorMessageSalaryEdit && <div style={{ color: 'red' }}>{errorMessageSalaryEdit}</div>}
 
                   
                   <br></br>
@@ -373,6 +692,7 @@ function Employee() {
                     value={departmentIdEdit}
                     onChange={(e)=>setDepartmentIdEdit(e.target.value)}
                   />
+                  {errorMessageDepartmentEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentEdit}</div>}
                   
         </Modal.Body>
         <Modal.Footer>
@@ -411,6 +731,7 @@ function Employee() {
           <Modal.Title>Add Employee</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+                 <div>{errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}</div>
                   <Form.Label htmlFor="nic">nic</Form.Label>
                   <Form.Control
                     type="text"
@@ -419,6 +740,7 @@ function Employee() {
                     value={nicNumberSave}
                     onChange={(e)=>setNicNumberSave(e.target.value)}
                   />
+                  {errorMessageNIC && <div style={{ color: 'red' }}>{errorMessageNIC}</div>}
                   <br></br>
 
                   <Form.Label htmlFor="firstname">firstName</Form.Label>
@@ -429,6 +751,7 @@ function Employee() {
                     value={firstNameSave}
                     onChange={(e)=>setFirstNameSave(e.target.value)}
                   />
+                  {errorMessageFirstName && <div style={{ color: 'red' }}>{errorMessageFirstName}</div>}
 
                   <br></br>
 
@@ -440,6 +763,7 @@ function Employee() {
                     value={lastNameSave}
                     onChange={(e)=>setLastNameSave(e.target.value)}
                   />
+                  {errorMessageLastName && <div style={{ color: 'red' }}>{errorMessageLastName}</div>}
 
 
                   <br></br>
@@ -451,6 +775,7 @@ function Employee() {
                     value={emailAddressSave}
                     onChange={(e)=>setEmailAddressSave(e.target.value)}
                   />
+                  {errorMessageEmailAddress && <div style={{ color: 'red' }}>{errorMessageEmailAddress}</div>}
 
                    <br></br>
                   <Form.Label htmlFor="mobile">mobileNumber</Form.Label>
@@ -461,6 +786,7 @@ function Employee() {
                     value={mobileNumberSave}
                     onChange={(e)=>setMobileNumberSave(e.target.value)}
                   />
+                  {errorMessageMobileNumber && <div style={{ color: 'red' }}>{errorMessageMobileNumber}</div>}
 
                   
                   <br></br>
@@ -480,6 +806,7 @@ function Employee() {
                       </span>
                     </div>
                   </div>
+                  {errorMessageDateOfBirth && <div style={{ color: 'red' }}>{errorMessageDateOfBirth}</div>}
       
 
                   
@@ -492,6 +819,7 @@ function Employee() {
                     value={genderSave}
                     onChange={(e)=>setGenderSave(e.target.value)}
                   />
+                  {errorMessageGender && <div style={{ color: 'red' }}>{errorMessageGender}</div>}
 
 
                   
@@ -504,6 +832,7 @@ function Employee() {
                     value={salarySave}
                     onChange={(e)=>setSalarySave(e.target.value)}
                   />
+                  {errorMessageSalary && <div style={{ color: 'red' }}>{errorMessageSalary}</div>}
 
                   
                   <br></br>
@@ -515,6 +844,7 @@ function Employee() {
                     value={departmentIdSave}
                     onChange={(e)=>setDepartmentIdSave(e.target.value)}
                   />
+                  {errorMessageDepartment && <div style={{ color: 'red' }}>{errorMessageDepartment}</div>}
                   
 
 
