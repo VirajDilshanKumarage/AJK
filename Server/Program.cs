@@ -6,7 +6,27 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(MyAllowSpecificOrigins,
+                          policy =>
+                          {
+                              policy.WithOrigins("http://localhost:3000")
+                                                  .AllowAnyHeader()
+                                                  .AllowAnyMethod();
+                          });
+});
+
+ var app = builder.Build();
+
+// app.Use((ctx,next)=>
+// {
+//    ctx.Response.Headers["Access-Control-Allow-Origin"]="http://localhost:3000";
+//    return next();
+// });
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -15,9 +35,27 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
-app.UseAuthentication();
+
+
+
+
+
+
+
+
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
+app.UseCors(MyAllowSpecificOrigins);
+
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
+
+
+

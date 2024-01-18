@@ -7,7 +7,7 @@ namespace EmployeesController.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeesController : ControllerBase
+       public class EmployeesController : ControllerBase
     {
          private string connetionString ="DefaultConnection";
         private readonly IConfiguration _configuration;
@@ -60,6 +60,48 @@ namespace EmployeesController.Controllers
             }
             return Ok(getEmployeeList);
         
+        }
+
+
+        [HttpGet("getEmployeeById/{employeeID}")]
+        public IActionResult GetEmplyeeById(int employeeID)
+        {  
+             GetEmployee employee = null;
+            string storedProcedure ="GetEmployeeById";
+            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString(connetionString)))
+            {    
+                
+                connection.Open();
+                using( SqlCommand sqlCommand = new SqlCommand(storedProcedure,connection))
+                {
+                       sqlCommand.CommandType=CommandType.StoredProcedure;
+                       sqlCommand.Parameters.AddWithValue("@EmployeeId",employeeID);
+
+                       using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                       {
+                             if(reader.Read())
+                             {
+                                employee = new GetEmployee();
+                                employee.EmployeeId=(int)reader["employee_id"];
+                                employee.NicNumber=reader["nic_number"].ToString();
+                                employee.FirstName=reader["first_name"].ToString();
+                                employee.LastName=reader["last_name"].ToString();
+                                employee.EmailAddress=reader["email_address"].ToString();
+                                employee.MobileNumber=reader["mobile_number"].ToString();
+                                employee.DateOfBirth=Convert.ToDateTime(reader["date_of_birth"]);
+                                employee.Age=(int)reader["age"];
+                                employee.Gender=reader["gender"].ToString();
+                                employee.Salary=Convert.ToDecimal(reader["salary"]);
+                                employee.DepartmentName=reader["department_name"].ToString();
+                             }
+
+                            connection.Close();
+                       }
+                       
+                }
+            }
+
+            return Ok(employee);
         }
 
         

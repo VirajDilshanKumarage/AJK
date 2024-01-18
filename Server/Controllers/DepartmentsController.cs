@@ -8,9 +8,10 @@ namespace DepartmentsController.Controllers{
 
     [Route("api/[controller]")]
     [ApiController]
+   
     public class DepartmentsController:ControllerBase
     {   
-        private string connetionString ="DefaultConnection";
+        private readonly string connetionString ="DefaultConnection";
         private readonly IConfiguration _configuration;
         public DepartmentsController(IConfiguration configuration){
             _configuration = configuration;
@@ -122,7 +123,7 @@ namespace DepartmentsController.Controllers{
              using (SqlConnection connection =new SqlConnection(_configuration.GetConnectionString(connetionString)))
              {
                   connection.Open();
-
+                  //sql Command for checking fk_constraint violations
                   using (SqlCommand sqlCommandFK = new SqlCommand(storedProcedureForeignkeyConstraint,connection))
                   {
                         sqlCommandFK.CommandType =CommandType.StoredProcedure;
@@ -135,7 +136,7 @@ namespace DepartmentsController.Controllers{
                         }
                   }
 
-
+                  //sql Command for delete a row from department 
                   using (SqlCommand sqlCommandDelete =new SqlCommand(storedProcedureDelete,connection))
                   {
 
