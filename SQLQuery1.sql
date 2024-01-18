@@ -270,4 +270,33 @@ END;
 
 
 -- exec CheckNumberOfEmployeeInDepartment 1;
--- DROP PROCEDURE IF EXISTS CheckNumberOfEmployeeInDepartment;
+DROP PROCEDURE IF EXISTS GetEmployeeById;
+
+
+
+-- get emplyee by id
+CREATE PROCEDURE GetEmployeeById 
+    @EmployeeId INT
+AS
+BEGIN
+    SELECT
+        e.employee_id,
+        e.nic_number,
+        e.first_name,
+        e.last_name,
+        e.email_address,
+        e.mobile_number,
+        e.date_of_birth,
+        e.age,
+        e.gender,
+        e.salary,
+        d.department_name
+    FROM
+        Employee e
+    JOIN
+        Department d ON e.department_id = d.department_id
+    WHERE
+        e.employee_id = @EmployeeId;
+END;
+
+

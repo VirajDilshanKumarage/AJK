@@ -38,28 +38,55 @@ function Employee() {
 
 
   //save employee data
-  const [nicNumber,setNicNumber] = useState('');
-  const [firstName,setFirstName] = useState('');
-  const [lastName,setLastName] = useState('');
-  const [emailAddress,setEmailAddress] = useState('');
-  const [mobileNumber,setMobileNumber] = useState('');
-  const [dateOfBirth,setDateOfBirth] = useState(null);
-  const [gender,setGender] = useState('');
-  const [salary,setSalary] = useState(0);
-  const [department,setDepartment] = useState(null);
+  const [nicNumberSave,setNicNumberSave] = useState('');
+  const [firstNameSave,setFirstNameSave] = useState('');
+  const [lastNameSave,setLastNameSave] = useState('');
+  const [emailAddressSave,setEmailAddressSave] = useState('');
+  const [mobileNumberSave,setMobileNumberSave] = useState('');
+  const [dateOfBirthSave,setDateOfBirthSave] = useState(null);
+  const [genderSave,setGenderSave] = useState('');
+  const [salarySave,setSalarySave] = useState(0);
+  const [departmentIdSave,setDepartmentIdSave] = useState(0);
+
+  //edit employee data
+  const [nicNumberEdit,setNicNumberEdit] = useState('');
+  const [firstNameEdit,setFirstNameEdit] = useState('');
+  const [lastNameEdit,setLastNameEdit] = useState('');
+  const [emailAddressEdit,setEmailAddressEdit] = useState('');
+  const [mobileNumberEdit,setMobileNumberEdit] = useState('');
+  const [dateOfBirthEdit,setDateOfBirthEdit] = useState(null);
+  const [genderEdit,setGenderEdit] = useState('');
+  const [salaryEdit,setSalaryEdit] = useState(0);
+  const [departmentIdEdit,setDepartmentIdEdit] = useState(0);
+
+  //here I create the cons to store the employee id that wanted to update it set in handleEdit() and then use the value in hadleUpdate()
+  const [empID , setEmpID] =useState(0);
 
 
-  //clear method
-  const clear= ()=>{
-    setNicNumber('');
-    setFirstName('');
-    setLastName('');
-    setEmailAddress('');
-    setMobileNumber('');
-    setDateOfBirth('')
-    setGender('');
-    setSalary(0);
-    setDepartment(null);
+  //clear method for adding form
+  const clearSave= ()=>{
+    setNicNumberSave('');
+    setFirstNameSave('');
+    setLastNameSave('');
+    setEmailAddressSave('');
+    setMobileNumberSave('');
+    setDateOfBirthSave('')
+    setGenderSave('');
+    setSalarySave(0);
+    setDepartmentIdSave(0);
+  }
+
+  //clear method for updating form
+  const clearEdit= ()=>{
+    setNicNumberEdit('');
+    setFirstNameEdit('');
+    setLastNameEdit('');
+    setEmailAddressEdit('');
+    setMobileNumberEdit('');
+    setDateOfBirthEdit('')
+    setGenderEdit('');
+    setSalaryEdit(0);
+    setDepartmentIdEdit(0);
   }
 
 
@@ -68,9 +95,7 @@ function Employee() {
 
   const [employeeData, setEmployeeData] = useState([]);
 
-
-
-  //fetching
+  //fetching all employees
   const fetchEmployeeData=async ()=>{
         const get_url="http://localhost:5148/api/Employees/getAllEmployees";
         const response = await axios.get(get_url);
@@ -86,39 +111,110 @@ function Employee() {
 
   //adding
   const handleSave = ()=>{
-         
-
          const post_url ="http://localhost:5148/api/Employees/saveNewEmployee";
          const data = {
-          "nicNumber": nicNumber,
-          "firstName": firstName,
-          "lastName": lastName,
-          "emailAddress": emailAddress,
-          "mobileNumber": mobileNumber,
-          "dateOfBirth": dateOfBirth,
-          "gender": gender,
-          "salary": salary,
-          "departmentId": department
+          "nicNumber": nicNumberSave,
+          "firstName": firstNameSave,
+          "lastName": lastNameSave,
+          "emailAddress": emailAddressSave,
+          "mobileNumber": mobileNumberSave,
+          "dateOfBirth": dateOfBirthSave,
+          "gender": genderSave,
+          "salary": salarySave,
+          "departmentId": departmentIdSave
         }
-        console.log(data);
+        console.log(data); // just render data in console
         axios.post(post_url,data)
         .then((result)=>{
           fetchEmployeeData();
-          clear();
+          handleCloseAdd();
+          clearSave();
         })
   }
 
 
-  //editing
-  const handleEdit = (_employeeId)=>{
+  //editing just open the updat modal and fill the current data
+  const handleEdit = (_employeeId)=>{ 
     
-    handleShowEdit();
+     handleShowEdit();
+     setEmpID(_employeeId); //set the empID to use in handleUpdate() 
+
+    const getAllEmployeeById =(_employeeId)=>{
+      const getById_url =`http://localhost:5148/api/Employees/getEmployeeById/${_employeeId}`;
+
+      axios.get(getById_url)
+      .then((result) => {
+
+        console.log(result.data);// just see data form console
+        const employee = result.data;
+        setNicNumberEdit(employee.nicNumber);
+        setFirstNameEdit(employee.firstName);
+        setLastNameEdit(employee.lastName);
+        setEmailAddressEdit(employee.emailAddress);
+        setMobileNumberEdit(employee.mobileNumber);
+        setDateOfBirthEdit(new Date(employee.dateOfBirth));
+        setGenderEdit(employee.gender); // Fix: Use setGender instead of setDateOfBirth
+        setSalaryEdit(employee.salary);
+        setDepartmentIdEdit(employee.departmentName); // Fix: Use setDepartment instead of setEmailAddress
+      })
+    }
+
+    getAllEmployeeById(_employeeId);  
+    
     
   }
 
-  //deleting
-  const handleDelete = (_employeeId)=>{
-    handleShowDelete();
+
+  //handle update this is the fuction to update data in database
+  const handleUpdate=()=>{
+
+      
+      const UpdateEmployee =(_employeeId)=>{
+      const put_url = `http://localhost:5148/api/Employees/updateEmployee/${_employeeId}`;
+  
+      const updatedData={
+        
+          "nicNumber": nicNumberEdit,
+          "firstName": firstNameEdit,
+          "lastName": lastNameEdit,
+          "emailAddress": emailAddressEdit,
+          "mobileNumber": mobileNumberEdit,
+          "dateOfBirth": dateOfBirthEdit,
+          "gender": genderEdit,
+          "salary": salaryEdit,
+          "departmentId": departmentIdEdit
+        
+      }
+       
+      console.log(updatedData);
+  
+      axios.put(put_url,updatedData)
+      .then((result)=>{
+          fetchEmployeeData();
+          clearEdit();
+      })
+      }
+  
+      UpdateEmployee(empID);
+      handleCloseEdit();
+      setEmpID(0); // once update is complete then reset the empID
+
+  }
+
+
+
+  // define a const for set the employee id that I need to delete
+  const [empIDToDelete,setempIDToDelete] =useState(0);
+  //deleting 
+  const handleDelete = ()=>{
+      const delete_url =`http://localhost:5148/api/Employees/deleteEmployee/${empIDToDelete}`; 
+      axios.delete(delete_url)
+      .then((result)=>{
+          console.log(result);
+          fetchEmployeeData();
+          setempIDToDelete(0); // reset the employeeIDToDelete
+          handleCloseDelete();
+      })
   }
 
 
@@ -157,7 +253,7 @@ function Employee() {
                 <td>{employee.departmentName}</td>
                 <td colSpan={2}>
                   <Button variant="primary" onClick={() => handleEdit(employee.employeeId)}>Edit</Button> &nbsp;
-                  <Button variant="danger" onClick={() => handleDelete(employee.employeeId)}>Delete</Button>
+                  <Button variant="danger" onClick={() => {setempIDToDelete(employee.employeeId); handleShowDelete()}}>Delete</Button>
                 </td>
               </tr>
             ))
@@ -176,20 +272,20 @@ function Employee() {
         <Form.Label htmlFor="nic">nic</Form.Label>
                   <Form.Control
                     type="text"
-                    id="nic"
+                    id="nicEdit"
                     aria-describedby="nicHelpBlock"
-                    value={nicNumber}
-                    onChange={(e)=>setNicNumber(e.target.value)}
+                    value={nicNumberEdit}
+                    onChange={(e)=>setNicNumberEdit(e.target.value)}
                   />
                   <br></br>
 
                   <Form.Label htmlFor="firstname">firstName</Form.Label>
                   <Form.Control
                     type="text"
-                    id="firstName"
+                    id="firstNameEdit"
                     aria-describedby="firstNameHelpBlock"
-                    value={firstName}
-                    onChange={(e)=>setFirstName(e.target.value)}
+                    value={firstNameEdit}
+                    onChange={(e)=>setFirstNameEdit(e.target.value)}
                   />
 
                   <br></br>
@@ -197,10 +293,10 @@ function Employee() {
                   <Form.Label htmlFor="lastName">lastName</Form.Label>
                   <Form.Control
                     type="text"
-                    id="lastName"
+                    id="lastNameEdit"
                     aria-describedby="lastNameHelpBlock"
-                    value={lastName}
-                    onChange={(e)=>setLastName(e.target.value)}
+                    value={lastNameEdit}
+                    onChange={(e)=>setLastNameEdit(e.target.value)}
                   />
 
 
@@ -208,20 +304,20 @@ function Employee() {
                   <Form.Label htmlFor="email">emailAddress</Form.Label>
                   <Form.Control
                     type="text"
-                    id="email"
+                    id="emailEdit"
                     aria-describedby="emailHelpBlock"
-                    value={emailAddress}
-                    onChange={(e)=>setEmailAddress(e.target.value)}
+                    value={emailAddressEdit}
+                    onChange={(e)=>setEmailAddressEdit(e.target.value)}
                   />
 
                    <br></br>
                   <Form.Label htmlFor="mobile">mobileNumber</Form.Label>
                   <Form.Control
                     type="text"
-                    id="mobile"
+                    id="mobileEdit"
                     aria-describedby="mobileHelpBlock"
-                    value={mobileNumber}
-                    onChange={(e)=>setMobileNumber(e.target.value)}
+                    value={mobileNumberEdit}
+                    onChange={(e)=>setMobileNumberEdit(e.target.value)}
                   />
 
                   
@@ -229,8 +325,8 @@ function Employee() {
                   <Form.Label htmlFor="DOB">Date of Birth</Form.Label>
                   <div className="input-group">
                     <DatePicker
-                      id="DOB"
-                      selected={dateOfBirth}
+                      id="DOBEdit"
+                      selected={dateOfBirthEdit}
                       onChange={(date) => setDateOfBirth(date)}
                       dateFormat="yyyy-MM-dd"
                       className="form-control"
@@ -249,10 +345,10 @@ function Employee() {
                   <Form.Label htmlFor="gender">gender</Form.Label>
                   <Form.Control
                     type="text"
-                    id="gender"
+                    id="genderEdit"
                     aria-describedby="genderHelpBlock"
-                    value={gender}
-                    onChange={(e)=>setGender(e.target.value)}
+                    value={genderEdit}
+                    onChange={(e)=>setGenderEdit(e.target.value)}
                   />
 
 
@@ -261,10 +357,10 @@ function Employee() {
                   <Form.Label htmlFor="salary">salary</Form.Label>
                   <Form.Control
                     type="text"
-                    id="salary"
+                    id="salaryEdit"
                     aria-describedby="salaryHelpBlock"
-                    value={salary}
-                    onChange={(e)=>setSalary(e.target.value)}
+                    value={salaryEdit}
+                    onChange={(e)=>setSalaryEdit(e.target.value)}
                   />
 
                   
@@ -272,10 +368,10 @@ function Employee() {
                   <Form.Label htmlFor="departmentId">department</Form.Label>
                   <Form.Control
                     type="text"
-                    id="department"
+                    id="departmentIdEdit"
                     aria-describedby="departmentHelpBlock"
-                    value={department}
-                    onChange={(e)=>setDepartment(e.target.value)}
+                    value={departmentIdEdit}
+                    onChange={(e)=>setDepartmentIdEdit(e.target.value)}
                   />
                   
         </Modal.Body>
@@ -283,7 +379,7 @@ function Employee() {
           <Button variant="secondary" onClick={handleCloseEdit}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleCloseEdit}>
+          <Button variant="primary" onClick={()=>handleUpdate()}>
             Update
           </Button>
         </Modal.Footer>
@@ -296,12 +392,12 @@ function Employee() {
         <Modal.Header closeButton>
           <Modal.Title>Delete Employee</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
+        <Modal.Body>Comfirm the Delete</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseDelete}>
             Close
           </Button>
-          <Button variant="danger" onClick={handleCloseDelete}>
+          <Button variant="danger" onClick={()=>handleDelete()}>
             Delete
           </Button>
         </Modal.Footer>
@@ -312,26 +408,26 @@ function Employee() {
         {/* add modal */}
     <Modal show={showAdd} onHide={handleCloseAdd}>
         <Modal.Header closeButton>
-          <Modal.Title>Delete Employee</Modal.Title>
+          <Modal.Title>Add Employee</Modal.Title>
         </Modal.Header>
         <Modal.Body>
                   <Form.Label htmlFor="nic">nic</Form.Label>
                   <Form.Control
                     type="text"
-                    id="nic"
+                    id="nicSave"
                     aria-describedby="nicHelpBlock"
-                    value={nicNumber}
-                    onChange={(e)=>setNicNumber(e.target.value)}
+                    value={nicNumberSave}
+                    onChange={(e)=>setNicNumberSave(e.target.value)}
                   />
                   <br></br>
 
                   <Form.Label htmlFor="firstname">firstName</Form.Label>
                   <Form.Control
                     type="text"
-                    id="firstName"
+                    id="firstNameSave"
                     aria-describedby="firstNameHelpBlock"
-                    value={firstName}
-                    onChange={(e)=>setFirstName(e.target.value)}
+                    value={firstNameSave}
+                    onChange={(e)=>setFirstNameSave(e.target.value)}
                   />
 
                   <br></br>
@@ -339,10 +435,10 @@ function Employee() {
                   <Form.Label htmlFor="lastName">lastName</Form.Label>
                   <Form.Control
                     type="text"
-                    id="lastName"
+                    id="lastNameSave"
                     aria-describedby="lastNameHelpBlock"
-                    value={lastName}
-                    onChange={(e)=>setLastName(e.target.value)}
+                    value={lastNameSave}
+                    onChange={(e)=>setLastNameSave(e.target.value)}
                   />
 
 
@@ -350,20 +446,20 @@ function Employee() {
                   <Form.Label htmlFor="email">emailAddress</Form.Label>
                   <Form.Control
                     type="text"
-                    id="email"
+                    id="emailSave"
                     aria-describedby="emailHelpBlock"
-                    value={emailAddress}
-                    onChange={(e)=>setEmailAddress(e.target.value)}
+                    value={emailAddressSave}
+                    onChange={(e)=>setEmailAddressSave(e.target.value)}
                   />
 
                    <br></br>
                   <Form.Label htmlFor="mobile">mobileNumber</Form.Label>
                   <Form.Control
                     type="text"
-                    id="mobile"
+                    id="mobileSave"
                     aria-describedby="mobileHelpBlock"
-                    value={mobileNumber}
-                    onChange={(e)=>setMobileNumber(e.target.value)}
+                    value={mobileNumberSave}
+                    onChange={(e)=>setMobileNumberSave(e.target.value)}
                   />
 
                   
@@ -371,9 +467,9 @@ function Employee() {
                   <Form.Label htmlFor="DOB">Date of Birth</Form.Label>
                   <div className="input-group">
                     <DatePicker
-                      id="DOB"
-                      selected={dateOfBirth}
-                      onChange={(date) => setDateOfBirth(date)}
+                      id="DOBSave"
+                      selected={dateOfBirthSave}
+                      onChange={(date) => setDateOfBirthSave(date)}
                       dateFormat="yyyy-MM-dd"
                       className="form-control"
                       ref={datePickerRef}
@@ -391,10 +487,10 @@ function Employee() {
                   <Form.Label htmlFor="gender">gender</Form.Label>
                   <Form.Control
                     type="text"
-                    id="gender"
+                    id="genderSave"
                     aria-describedby="genderHelpBlock"
-                    value={gender}
-                    onChange={(e)=>setGender(e.target.value)}
+                    value={genderSave}
+                    onChange={(e)=>setGenderSave(e.target.value)}
                   />
 
 
@@ -403,10 +499,10 @@ function Employee() {
                   <Form.Label htmlFor="salary">salary</Form.Label>
                   <Form.Control
                     type="text"
-                    id="salary"
+                    id="salarySave"
                     aria-describedby="salaryHelpBlock"
-                    value={salary}
-                    onChange={(e)=>setSalary(e.target.value)}
+                    value={salarySave}
+                    onChange={(e)=>setSalarySave(e.target.value)}
                   />
 
                   
@@ -414,10 +510,10 @@ function Employee() {
                   <Form.Label htmlFor="departmentId">department</Form.Label>
                   <Form.Control
                     type="text"
-                    id="department"
-                    aria-describedby="departmentHelpBlock"
-                    value={department}
-                    onChange={(e)=>setDepartment(e.target.value)}
+                    id="departmentIdSave"
+                    aria-describedby="departmentIdHelpBlock"
+                    value={departmentIdSave}
+                    onChange={(e)=>setDepartmentIdSave(e.target.value)}
                   />
                   
 
