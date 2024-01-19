@@ -11,6 +11,7 @@ import Employee from '../EmployeePage/Employee';
 
 function Department() {
    const baseUrlDepartment='http://localhost:5148/api/Departments';
+   const baseUrlExceptionHandle='http://localhost:5148/api/ExceptionHandles';
 
   //const for Add department modal
   const [showAdd, setShowAdd] = useState(false);
@@ -39,9 +40,9 @@ function Department() {
 
 
   //const for validation error message in edit modal
-  const [errorMessageDepartmentEdit,setErrorMessageDepartmentEdit]=useState('Please fill all fields');
-  const [errorMessageDepartmentCodeEdit,setErrorMessageDepartmentCodeEdit]=useState('Please enter valid department code');
-  const [errorMessageDepartmentNameEdit,setErrorMessageDepartmentNameEdit]=useState('Please enter valid department name');
+  const [errorMessageDepartmentEdit,setErrorMessageDepartmentEdit]=useState('');
+  const [errorMessageDepartmentCodeEdit,setErrorMessageDepartmentCodeEdit]=useState('');
+  const [errorMessageDepartmentNameEdit,setErrorMessageDepartmentNameEdit]=useState('');
   const clearErrorMessageEdit=()=>{
     setErrorMessageDepartmentEdit('');
     setErrorMessageDepartmentCodeEdit('');
@@ -84,7 +85,7 @@ function Department() {
 
    const handleSave=()=>{
    
-   // clearErrorMessageSave();
+    
 
       const post_url=`${baseUrlDepartment}/saveNewDepartment`;
 
@@ -93,10 +94,10 @@ function Department() {
         "departmentName": departmentNameSave
       }
 
-      
+      clearErrorMessageSave();
       //validation for all field check all input fields are filled
       function isFilled(data){
-         if(data.departmentCode!='' && data.departmentName!=''){
+         if(data.departmentCode!=='' && data.departmentName!==''){
            setErrorMessageDepartmentSave('');
            return true;
          }
@@ -106,7 +107,15 @@ function Department() {
 
       //validation for Department code in save modal
       function validationDepartmentCode(data){
-        if(data.departmentCode!='' && data.departmentCode.length>1){
+        fetchDepartmentData();
+        for( const department of departmentData){
+          if(department.departmentCode.toLowerCase() === data.departmentCode.toLowerCase()){
+            setErrorMessageDepartmnetCodeSave('Department code is already used, Enter new one');
+            return false;
+          }
+        }
+
+        if(data.departmentCode!=='' && data.departmentCode.length>1){
            setErrorMessageDepartmnetCodeSave('');
            return true;
         }
@@ -116,11 +125,12 @@ function Department() {
 
       //validation for department name in save modal :- customize the validation and constrains
       function validationDepartmentName(data){
-        if(data.departmentName!=''&&data.departmentName.length>1){
+        var regex =/\d/;  // Regular expression to check if there is a number in the string
+        if(data.departmentName!=='' && data.departmentName.length>1 && !regex.test(data.departmentName)){
           setErrorMessageDepartmentNameSave('');
           return true;
         }
-        setErrorMessageDepartmentNameSave('Enter valid department name');
+        setErrorMessageDepartmentNameSave('Enter valid department name, Numbers cannot be used');
           return false;
       }
 
@@ -132,6 +142,7 @@ function Department() {
             handleCloseAdd();
             fetchDepartmentData();
             clearSave();
+            clearErrorMessageSave();
             toast.success('New Department Added Successfully');
 
           })
@@ -162,19 +173,17 @@ function Department() {
               const department = result.data;
               setDepartmentCodeEdit(department.departmentCode);
               setDepartmentNameEdit(department.departmentName);
-
              })
           }catch(error){
             console.error("Error: endpoin, getDepartmentById, fail to get data",error);
           }
-
 
    }
 
 
 
    //handle edit departmnet
-   const [departmentNeedToUpdate,setdepartmentNeedToUpdate] =useState(0);
+   const [departmentIdNeedToUpdate,setdepartmentIdNeedToUpdate] =useState(0);
    const [departmentCodeEdit,setDepartmentCodeEdit]=useState('');
    const [departmentNameEdit,setDepartmentNameEdit] =useState('');
    //clear data in edit modal
@@ -184,7 +193,7 @@ function Department() {
    }
 
    const handleEdit=()=>{
-   const put_url =`${baseUrlDepartment}/updateDepartment/${departmentNeedToUpdate}`;
+   const put_url =`${baseUrlDepartment}/updateDepartment/${departmentIdNeedToUpdate}`;
 
     const updateDepartment={
       "departmentCode": departmentCodeEdit,
@@ -195,7 +204,7 @@ function Department() {
   
       //validation for all field check all input fields are filled
     function isFilled(data){
-        if(data.departmentCode!='' && data.departmentName!=''){
+        if(data.departmentCode!=='' && data.departmentName!==''){
           setErrorMessageDepartmentEdit('');
           return true;
         }
@@ -206,20 +215,20 @@ function Department() {
 
      //validation for Department code in edit modal
       function validationDepartmentCode(data){
-
+         fetchDepartmentData();
         for (const department of departmentData) {
           // Skip the current employee being updated
-          if (department.employeeId == departmentNeedToUpdate) {
+          if (department.departmentId === departmentIdNeedToUpdate) {
               continue;
           }
       
-          if (department.departmentCode == data.departmentCode) {
+          if (department.departmentCode.toLowerCase() === data.departmentCode.toLowerCase()) {
               setErrorMessageDepartmentCodeEdit("Department code already used");
               return false;
           }
        }
 
-        if(data.departmentCode!='' && data.departmentCode.length>1){
+        if(data.departmentCode!=='' && data.departmentCode.length>1){
             setErrorMessageDepartmentCodeEdit('');
             return true;
         }
@@ -231,11 +240,12 @@ function Department() {
 
      //validation for department name in edit modal :- customize the validation and constrains
      function validationDepartmentName(data){
-       if(data.departmentName!=''&&data.departmentName.length>1){
+       var regex = /\d/;  // Regular expression to check if there is a number in the string
+       if(data.departmentName!=='' && data.departmentName.length>1 && !regex.test(data.departmentName)){
          setErrorMessageDepartmentNameEdit('');
          return true;
        }
-       setErrorMessageDepartmentNameEdit('Enter valid department name');
+       setErrorMessageDepartmentNameEdit('Enter valid department name, Numbers cannot be used');
          return false;
      }
 
@@ -247,9 +257,11 @@ function Department() {
       .then((result=>{
         handleCloseEdit();
         clearEdit();
+        clearErrorMessageEdit();
         fetchDepartmentData();
+        setdepartmentIdNeedToUpdate(0);
         toast.success("Department successfully updated");
-        setdepartmentNeedToUpdate(0);
+       
 
       }))
 
@@ -263,23 +275,81 @@ function Department() {
     toast.error('Department details invalid');
 
   }
-
     
   }
 
 
-   //handle delete department
-   const handleDelete=(departmentId)=>{
-    alert(departmentId);
+
+
+   //exception handleing end points
+   //foreign key constrain violation
+
+   const checkForeignKeyConstraintViolations=async (_departmentId)=>{
+
+    const foreignKeyConstraint_url=`${baseUrlExceptionHandle}/foreignKeyConstraint/${_departmentId}`
+    //here if the respose data in boolean type and if it is `true`: violated_fk_constrain  `false`: not_violated_fk_constrain
+    try{
+           const response =await axios.get(foreignKeyConstraint_url);
+           console.log("violated_fk_constrain: ",response.data?"yes violated":"no not violated");
+           return response.data;
+          
+
+    }catch(error){
+      console.error("Error: error in check_ForeignKey_Constraint_Violations");
+    }
+
    }
 
 
+   //handle delete department
+   const [departmentIdNeedToDelete,setDepartmentIdNeedToDelete] = useState(0);
+   const handleDelete = async () => {
+    const delete_url = `${baseUrlDepartment}/deleteDepartment/${departmentIdNeedToDelete}`;
+  
+    try {
+      // Check if there is a foreign key constraint violation
+      const isForeignKeyViolation = await checkForeignKeyConstraintViolations(departmentIdNeedToDelete);
+  
+      if (!isForeignKeyViolation) {
+        // No foreign key constraint violation, proceed with deletion
+        try {
+          const response = await axios.delete(delete_url);
+          console.log(response.data);
+          handleCloseDelete();
+          setDepartmentIdNeedToDelete(0);
+          fetchDepartmentData();
+          toast.warning("Department " + departmentIdNeedToDelete + " deleted permanently");
+        } catch (error) {
+          console.error("Error: failed to delete department, endpoint, delete department, handleDelete, department module", error);
+          toast.error("Failed to delete department");
+        }
+      } else {
+        // There is a foreign key constraint violation, handle accordingly
+        handleCloseDelete();
+        toast.error('fk');
+      }
+    } catch (error) {
+      console.error("Error checking foreign key constraint", error);
+      toast.error("Failed to check foreign key constraint");
+    }
+  };
+  
 
 
+
+
+
+  //alert for foreign key constrain
+ 
 
   return (
 
     <>
+    
+
+
+
+
     <ToastContainer />
     <div className='DepartmentContent'>
       <h5>Department Details</h5> <Button variant="success" onClick={()=>handleShowAdd()}>Add Department</Button>
@@ -299,8 +369,8 @@ function Department() {
                     <td>{department.departmentCode}</td>
                     <td>{department.departmentName}</td>
                     <td>
-                         <Button variant='primary' onClick={()=>{getDepartmentById(department.departmentId); setdepartmentNeedToUpdate(department.departmentId); handleShowEdit()}} >Edit</Button> &nbsp;
-                         <Button variant='danger' onClick={()=>{handleDelete(department.departmentId)}}>Delete</Button>
+                         <Button variant='primary' onClick={()=>{getDepartmentById(department.departmentId); setdepartmentIdNeedToUpdate(department.departmentId); handleShowEdit()}} >Edit</Button> &nbsp;
+                         <Button variant='danger' onClick={()=>{setDepartmentIdNeedToDelete(department.departmentId); handleShowDelete();}}>Delete</Button>
                     </td>
                 </tr>
           ):""
@@ -385,7 +455,7 @@ function Department() {
             {errorMessageDepartmentNameEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentNameEdit}</div>}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseEdit}>
+          <Button variant="secondary" onClick={()=>{handleCloseEdit(); setdepartmentIdNeedToUpdate(0);/*reset the department id need to update*/}}>
             Close
           </Button>
           <Button variant="primary" onClick={()=>{handleEdit()}}>
@@ -403,10 +473,10 @@ function Department() {
         </Modal.Header>
         <Modal.Body>Do you need to permernatly delete this Department information ?</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseDelete}>
+          <Button variant="secondary" onClick={()=>{handleCloseDelete(); setDepartmentIdNeedToDelete(0);/**reset department id need to delete when close the modal*/}}>
             Cancle
           </Button>
-          <Button variant="danger" onClick={handleCloseDelete}>
+          <Button variant="danger" onClick={()=>{handleDelete()}}>
             Yes
           </Button>
         </Modal.Footer>

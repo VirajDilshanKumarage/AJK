@@ -9,7 +9,7 @@ namespace EmployeesController.Controllers
     [ApiController]
        public class EmployeesController : ControllerBase
     {
-         private string connetionString ="DefaultConnection";
+        private string connetionString ="DefaultConnection";
         private readonly IConfiguration _configuration;
         public EmployeesController(IConfiguration configuration)
         {
