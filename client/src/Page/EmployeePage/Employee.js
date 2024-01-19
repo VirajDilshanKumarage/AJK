@@ -18,6 +18,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { redirectDocument } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Alert from 'react-bootstrap/Alert';
+import Loader from '../../Component/Loader/Loader';
 
 function Employee() {
   /**
@@ -724,6 +725,7 @@ function Employee() {
         </tbody>
         
       </Table>
+ 
       { employeeData && employeeData.length === 0 ?
            <Alert variant="danger"  dismissible>
            <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
@@ -734,7 +736,7 @@ function Employee() {
          </Alert>:
           ""
        }
-     
+      
     </div>
 
 
@@ -817,7 +819,7 @@ function Employee() {
                     />
                     <div className="input-group-append" onClick={openDatePicker}>
                       <span className="input-group-text">
-                        <FaCalendar />
+                        <FaCalendar className='FaCalendar'/>
                       </span>
                     </div>
                   </div>
@@ -962,7 +964,7 @@ function Employee() {
                     />
                     <div className="input-group-append" onClick={openDatePicker}>
                       <span className="input-group-text">
-                        <FaCalendar />
+                        <FaCalendar className='FaCalendar'/>
                       </span>
                     </div>
                   </div>

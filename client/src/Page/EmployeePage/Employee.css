@@ -7,3 +7,11 @@
 .EmployeeTable{
     margin-top: 10px;
 }
+
+.FaCalendar{
+    height: 25px;    
+}
+
+.input-group-append{
+    padding-left: 20px;
+}
