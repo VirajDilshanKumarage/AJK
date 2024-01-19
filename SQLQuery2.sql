@@ -323,5 +323,22 @@ BEGIN
 END;
 
 
--- exec CheckNumberOfEmployeeInDepartment 1;
+-- chek fk constrain Violations
+CREATE PROCEDURE CheckForeignKeyConstraints
+   @DepartmentId INT
+AS
+BEGIN
+    SELECT COUNT (*)
+	FROM Employee 
+	WHERE department_id=@DepartmentId;
+END;
+
+
+
+
+-- execute stored procedure
+EXEC CheckNumberOfEmployeeInDepartment 4;
+-- drop stroed procedure
 DROP PROCEDURE IF EXISTS GetDepartmentById;
+
+-- 2024/1/20
