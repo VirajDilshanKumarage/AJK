@@ -228,6 +228,10 @@ function Employee() {
 
         // validation for add for
           function isDataFilled(data) {
+            if(data.dateOfBirth==''){
+              setErrorMessage("All fields are required");
+              return false;
+            }
             for (const value of Object.values(data)) {
               if (value === null || value === undefined) {
                  setErrorMessage("All fields are required");
@@ -294,20 +298,36 @@ function Employee() {
             return false;
           }
 
-          function dateOfBirthValidation(data){
-
-            const dateString = data.dateOfBirth;
-            // Parse the date string
-            const dateObject = new Date(dateString);
-            // Format the date to "YYYY-MM-DD"
-            const formattedDate = dateObject.toISOString().split('T')[0];
-            if( /^\d{4}-\d{2}-\d{2}$/.test(formattedDate)){
-              setErrorMessageDateOfBirth('');
-              return true;
+          function dateOfBirthValidation(data) {
+            if (data.dateOfBirth === '') {
+              setErrorMessageDateOfBirth("Set birthday");
+              return false;
             }
-            setErrorMessageDateOfBirth("Date format is not valid");
+          
+            const dateString = data.dateOfBirth;
+            const dateObject = new Date(dateString);
+          
+            // Check if the user is at least 17 years old
+            const today = new Date();
+            const minValidDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+          
+            if (dateObject < minValidDate) {
+              // Format the date to "YYYY-MM-DD"
+              const formattedDate = dateObject.toISOString().split('T')[0];
+          
+              if (/^\d{4}-\d{2}-\d{2}$/.test(formattedDate)) {
+                setErrorMessageDateOfBirth('');
+                return true;
+              } else {
+                setErrorMessageDateOfBirth("Date format is not valid");
+              }
+            } else {
+              setErrorMessageDateOfBirth("Employee must be at least 18 years old");
+            }
+          
             return false;
           }
+          
 
           function genderValidation(data){
              if(data.gender.toLowerCase()==='male' || data.gender.toLowerCase()==='female'){
@@ -329,15 +349,24 @@ function Employee() {
 
 
           function departmentValidation(data){
+                 console.log(departmentData);
+                 if(departmentData && departmentData.length>0){
+
                       for (const department of departmentData) {
                         if (department.departmentId == data.departmentId) {
                             setErrorMessageDepartment('');
                             return true;
                         }
+                        setErrorMessageDepartment('Select an existing department');
+                       return false;
                       }
+                      
+                 
+                 }
+                 setErrorMessageDepartment('There are no any department, Add a department first');
+                 return false;
 
-                setErrorMessageDepartment('Select an existing department');
-                return false;
+                     
           }
         
         
@@ -484,7 +513,7 @@ function Employee() {
            setErrorMessageFirstNameEdit('');
            return true
         }
-        setErrorMessageFirstNameEdit("Enter valid name for first name");
+        setErrorMessageFirstNameEdit("Enter valid name for first name, cant use numbers");
         return false
       }
 
@@ -493,7 +522,7 @@ function Employee() {
            setErrorMessageLastNameEdit('');
            return true
         }
-        setErrorMessageLastNameEdit("Enter valid name for last name");
+        setErrorMessageLastNameEdit("Enter valid name for last name, can't use numbers");
         return false
       }
 
@@ -512,24 +541,41 @@ function Employee() {
           setErrorMessageMobileNumberEdit('');
           return true;
         }
+
         setErrorMessageMobileNumberEdit('Enter valid mobile number eg: 0777111222');
         return false;
       }
 
-      function dateOfBirthValidation(updatedData){
-
-        const dateString = updatedData.dateOfBirth;
-        // Parse the date string
-        const dateObject = new Date(dateString);
-        // Format the date to "YYYY-MM-DD"
-        const formattedDate = dateObject.toISOString().split('T')[0];
-        if( /^\d{4}-\d{2}-\d{2}$/.test(formattedDate)){
-          setErrorMessageDateOfBirthEdit('');
-          return true;
+      function dateOfBirthValidation(updatedData) {
+        if (updatedData.dateOfBirth === '') {
+          setErrorMessageDateOfBirthEdit("Set birthday");
+          return false;
         }
-        setErrorMessageDateOfBirthEdit("Date format is not valid");
+      
+        const dateString = updatedData.dateOfBirth;
+        const dateObject = new Date(dateString);
+      
+        // Check if the user is at least 17 years old
+        const today = new Date();
+        const minValidDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+      
+        if (dateObject < minValidDate) {
+          // Format the date to "YYYY-MM-DD"
+          const formattedDate = dateObject.toISOString().split('T')[0];
+      
+          if (/^\d{4}-\d{2}-\d{2}$/.test(formattedDate)) {
+            setErrorMessageDateOfBirthEdit('');
+            return true;
+          } else {
+            setErrorMessageDateOfBirthEdit("Date format is not valid");
+          }
+        } else {
+          setErrorMessageDateOfBirthEdit("Employee must be at least 18 years old");
+        }
+      
         return false;
       }
+      
 
       function genderValidation(updatedData){
          if(updatedData.gender.toLowerCase()==='male' || updatedData.gender.toLowerCase()==='female'){

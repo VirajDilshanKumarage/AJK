@@ -367,13 +367,13 @@ function Department() {
         <Modal show={showAlert} variant='danger'>
   <Modal.Body>
     <Alert variant='warning'>
-    <BsFillExclamationTriangleFill className="mr-2" />
-
       <div className="d-flex align-items-center">
         <div>
-          <Alert.Heading>Can't Delete</Alert.Heading>
+          <Alert.Heading>Action is restricted ! &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <BsFillExclamationTriangleFill className="mr-2" /></Alert.Heading> 
+          <br></br>
+          <br></br>
           <p>
-            Cannot delete department because it is referenced by one or more employees.
+            Cannot delete this department because it is referenced by one or more employees.
           </p>
         </div>
       </div>
