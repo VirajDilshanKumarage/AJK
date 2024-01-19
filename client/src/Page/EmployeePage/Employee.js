@@ -78,7 +78,7 @@ function Employee() {
   };
 
 
-  //validation const for save form
+  //validation const for save form error message
   const [errorMessage,setErrorMessage] = useState('');
   const [errorMessageNIC,setErrorMessageNIC] = useState('');
   const [errorMessageFirstName,setErrorMessageFirstName] = useState('');
@@ -89,9 +89,22 @@ function Employee() {
   const [errorMessageGender,setErrorMessageGender] = useState('');
   const [errorMessageSalary,setErrorMessageSalary] = useState('');
   const [errorMessageDepartment,setErrorMessageDepartment] = useState('');
+  //clear error messages which in save modal
+  const clearErrorMessageSave=()=>{
+    setErrorMessage('');
+    setErrorMessageNIC('');
+    setErrorMessageFirstName('');
+    setErrorMessageLastName('');
+    setErrorMessageEmailAddress('');
+    setErrorMessageMobileNumber('');
+    setErrorMessageDateOfBirth('');
+    setErrorMessageGender('');
+    setErrorMessageSalary('');
+    setErrorMessageDepartment('');
+  }
 
 
-   //validation const for edit form
+   //validation const for edit form error message
    const [errorMessageEdit,setErrorMessageEdit] = useState('');
    const [errorMessageNICEdit,setErrorMessageNICEdit] = useState('');
    const [errorMessageFirstNameEdit,setErrorMessageFirstNameEdit] = useState('');
@@ -102,6 +115,19 @@ function Employee() {
    const [errorMessageGenderEdit,setErrorMessageGenderEdit] = useState('');
    const [errorMessageSalaryEdit,setErrorMessageSalaryEdit] = useState('');
    const [errorMessageDepartmentEdit,setErrorMessageDepartmentEdit] = useState('');
+   //clear error message which in edit model
+   const clearErrorMessageEdit=()=>{
+    setErrorMessageEdit('');
+    setErrorMessageNICEdit('');
+    setErrorMessageFirstNameEdit('');
+    setErrorMessageLastNameEdit('');
+    setErrorMessageEmailAddressEdit('');
+    setErrorMessageMobileNumberEdit('');
+    setErrorMessageDateOfBirthEdit('');
+    setErrorMessageGenderEdit('');
+    setErrorMessageSalaryEdit('');
+    setErrorMessageDepartmentEdit('');
+   }
 
 
   //save employee data
@@ -197,8 +223,8 @@ function Employee() {
           "departmentId": departmentIdSave
         }
         console.log(data); // just render data in console
-
         
+        clearErrorMessageSave();
 
         // validation for add for
           function isDataFilled(data) {
@@ -411,7 +437,7 @@ function Employee() {
        
       console.log(updatedData);
 
-      
+      clearErrorMessageEdit();
 
       // validation for edit for
       function isDataFilled(updatedData) {
@@ -441,7 +467,7 @@ function Employee() {
               setErrorMessageNICEdit("NIC already used by another employee");
               return false;
           }
-      }
+       }
       
 
         if(updatedData.nicNumber.length===12 || updatedData.nicNumber.length===10){

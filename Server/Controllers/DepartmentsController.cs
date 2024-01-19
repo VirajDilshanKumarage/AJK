@@ -50,6 +50,41 @@ namespace DepartmentsController.Controllers{
         }
 
 
+        [HttpGet("getDepartmentById/{departmentId}")]
+        public IActionResult GetDepartmentById(int departmentId)
+        {   
+            GetByIdDepartment department =null;
+            string storedProcedure ="GetDepartmentById";
+             using(SqlConnection connection =new SqlConnection(_configuration.GetConnectionString(connetionString)))
+             {
+                connection.Open();
+                using(SqlCommand sqlCommand=new SqlCommand(storedProcedure,connection))
+                {
+                    sqlCommand.CommandType=CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@DepartmentId",departmentId);
+
+                    using(SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        if(reader.Read())
+                        {
+                            department = new GetByIdDepartment();
+                            department.DepartmentCode = reader["department_code"].ToString();
+                            department.DepartmentName= reader["department_name"].ToString();
+
+                        }
+
+                        connection.Close();
+                    }
+                
+                }
+                
+             }
+             return Ok(department);
+            
+        }
+
+
+
         [HttpPost("saveNewDepartment")]
         public IActionResult CreateDepartment([FromBody] SaveDepartment savedepartmentObj)
         {
@@ -165,5 +200,12 @@ namespace DepartmentsController.Controllers{
 
 
 
+    }
+
+    internal class GetDepartmentById
+    {
+        public GetDepartmentById()
+        {
+        }
     }
 }
