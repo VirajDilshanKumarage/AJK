@@ -8,6 +8,8 @@ import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import Employee from '../EmployeePage/Employee';
+import { BsFillExclamationTriangleFill } from 'react-icons/bs';
+
 
 function Department() {
    const baseUrlDepartment='http://localhost:5148/api/Departments';
@@ -27,6 +29,11 @@ function Department() {
   const [showDelete, setShowDelete] = useState(false);
   const handleCloseDelete = () => setShowDelete(false);
   const handleShowDelete = () => setShowDelete(true);
+
+  //const for Alert box
+  const [showAlert, setShowAlert] = useState(false);
+  const handleCloseAlert = () => setShowAlert(false);
+  const handleShowAlert = () => setShowAlert(true);
 
   //const for validation error messages in add modal
   const [errorMessageDepartmentSave,setErrorMessageDepartmentSave]= useState('');
@@ -313,12 +320,21 @@ function Department() {
       if (!isForeignKeyViolation) {
         // No foreign key constraint violation, proceed with deletion
         try {
+          var _department_name = null;
+          var _department_code=null;
+          for(const department of departmentData){
+              if(department.departmentId===departmentIdNeedToDelete){
+                   _department_name=department.departmentName;
+                   _department_code=department.departmentCode;
+              }
+          }
+          
           const response = await axios.delete(delete_url);
           console.log(response.data);
           handleCloseDelete();
           setDepartmentIdNeedToDelete(0);
           fetchDepartmentData();
-          toast.warning("Department " + departmentIdNeedToDelete + " deleted permanently");
+          toast.warning("Department " + _department_name + " deleted permanentl ( Department code: "+_department_code+" )");
         } catch (error) {
           console.error("Error: failed to delete department, endpoint, delete department, handleDelete, department module", error);
           toast.error("Failed to delete department");
@@ -326,7 +342,8 @@ function Department() {
       } else {
         // There is a foreign key constraint violation, handle accordingly
         handleCloseDelete();
-        toast.error('fk');
+        handleShowAlert();
+       // toast.error('Employees are depend on this department');
       }
     } catch (error) {
       console.error("Error checking foreign key constraint", error);
@@ -346,7 +363,29 @@ function Department() {
 
     <>
     
+        {/* alert box for show foreing key constrain */}
+        <Modal show={showAlert} variant='danger'>
+  <Modal.Body>
+    <Alert variant='warning'>
+    <BsFillExclamationTriangleFill className="mr-2" />
 
+      <div className="d-flex align-items-center">
+        <div>
+          <Alert.Heading>Can't Delete</Alert.Heading>
+          <p>
+            Cannot delete department because it is referenced by one or more employees.
+          </p>
+        </div>
+      </div>
+      <hr />
+      <div className="d-flex justify-content-end">
+        <Button onClick={() => handleCloseAlert()} variant="outline-dark">
+          Got it
+        </Button>
+      </div>
+    </Alert>
+  </Modal.Body>
+</Modal>
 
 
 
@@ -481,6 +520,10 @@ function Department() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+
+  
+
 
 
   </>
