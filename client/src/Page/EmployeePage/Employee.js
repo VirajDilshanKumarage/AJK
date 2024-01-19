@@ -633,7 +633,9 @@ function Employee() {
     <>
     <ToastContainer />
     <div className='EmployeeContent'>
-      <h5>Employee Details</h5> <Button variant="success" onClick={()=>handleShowAdd()}>Add Employee</Button>
+      <h5 className="d-flex justify-content-center align-items-center">Employee Details</h5>
+      <hr/>
+      <Button variant="success" onClick={()=>handleShowAdd()}>Add Employee</Button>
       <Table striped bordered hover className='EmployeeTable'>
         <thead>
           <tr>

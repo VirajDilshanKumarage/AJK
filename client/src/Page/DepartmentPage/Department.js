@@ -391,7 +391,9 @@ function Department() {
 
     <ToastContainer />
     <div className='DepartmentContent'>
-      <h5>Department Details</h5> <Button variant="success" onClick={()=>handleShowAdd()}>Add Department</Button>
+      <h5 className="d-flex justify-content-center align-items-center" >Department Details</h5> 
+      <hr/>
+      <Button variant="success" onClick={()=>handleShowAdd()}>Add Department</Button>
         <Table striped bordered hover className='DepartmentTable'>
       <thead>
         <tr>
