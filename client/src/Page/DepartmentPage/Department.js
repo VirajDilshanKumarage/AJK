@@ -396,10 +396,10 @@ function Department() {
       <Button variant="success" onClick={()=>handleShowAdd()}>Add Department</Button>
         <Table striped bordered hover className='DepartmentTable'>
       <thead>
-        <tr>
-          <th>Department Code</th>
-          <th>Department Name</th>
-          <th>Action</th>
+        <tr >
+          <th className="text-center">Department Code</th>
+          <th className="text-center">Department Name</th>
+          <th className="text-center">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -409,7 +409,7 @@ function Department() {
                   <tr key={department.departmentId}>
                     <td>{department.departmentCode}</td>
                     <td>{department.departmentName}</td>
-                    <td>
+                    <td className="d-flex justify-content-center align-items-center">
                          <Button variant='primary' onClick={()=>{getDepartmentById(department.departmentId); setdepartmentIdNeedToUpdate(department.departmentId); handleShowEdit()}} >Edit</Button> &nbsp;
                          <Button variant='danger' onClick={()=>{setDepartmentIdNeedToDelete(department.departmentId); handleShowDelete();}}>Delete</Button>
                     </td>

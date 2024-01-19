@@ -639,17 +639,17 @@ function Employee() {
       <Table striped bordered hover className='EmployeeTable'>
         <thead>
           <tr>
-            <th>NIC</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email Address</th>
-            <th>Mobile Number</th>
-            <th>Date of Birth</th>
-            <th>Age</th>
-            <th>Gender</th>
-            <th>Salary</th>
-            <th>Department Name</th>
-            <th>Action</th>
+            <th className="text-center">NIC</th>
+            <th className="text-center">First Name</th>
+            <th className="text-center">Last Name</th>
+            <th className="text-center">Email Address</th>
+            <th className="text-center">Mobile Number</th>
+            <th className="text-center">Date of Birth</th>
+            <th className="text-center">Age</th>
+            <th className="text-center">Gender</th>
+            <th className="text-center">Salary</th>
+            <th className="text-center">Department Name</th>
+            <th className="text-center">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -666,7 +666,7 @@ function Employee() {
                 <td>{employee.gender}</td>
                 <td>{employee.salary.toFixed(2)}</td>
                 <td>{employee.departmentName}</td>
-                <td colSpan={2}>
+                <td colSpan={2} className="d-flex justify-content-center align-items-center">
                   <Button variant="primary" onClick={() => handleEdit(employee.employeeId)}>Edit</Button> &nbsp;
                   <Button variant="danger" onClick={() => {getEmployeeById(employee.employeeId); setempIDToDelete(employee.employeeId); handleShowDelete();}}>Delete</Button>
                 </td>
