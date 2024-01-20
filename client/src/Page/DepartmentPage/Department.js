@@ -71,7 +71,7 @@ function Department() {
 
   //const for Add department modal
   const [showAdd, setShowAdd] = useState(false);
-  const handleCloseAdd = () => setShowAdd(false);
+  const handleCloseAdd = () => {setShowAdd(false); clearErrorMessageSave()}
   const handleShowAdd = () => {
     fetchDepartmentData();//just refreshing department data to check the server is up & running ro down
     setShowAdd(true)
@@ -79,7 +79,7 @@ function Department() {
 
   //const for Edit department modal
   const [showEdit, setShowEdit] = useState(false);
-  const handleCloseEdit = () => setShowEdit(false);
+  const handleCloseEdit = () => {setShowEdit(false); clearErrorMessageEdit()}
   const handleShowEdit = () => setShowEdit(true);
 
   //const for Delete department modal

@@ -122,15 +122,19 @@ function Employee() {
 
   //add modal
   const [showAdd, setShowAdd] = useState(false);
-  const handleCloseAdd = () => setShowAdd(false);
+  const handleCloseAdd = () => {
+    clearErrorMessageSave();
+    setShowAdd(false);
+  }
   const handleShowAdd = () => {
     fetchDepartmentData();//refreshig loaded department details because those details are use in add modal;
     setShowAdd(true);
   }
 
+
   //edite modal
   const [showEdit, setShowEdit] = useState(false);
-  const handleCloseEdit = () => setShowEdit(false);
+  const handleCloseEdit = () => {clearErrorMessageEdit();setShowEdit(false);}
   const handleShowEdit = () => setShowEdit(true);
 
   //delete modal
