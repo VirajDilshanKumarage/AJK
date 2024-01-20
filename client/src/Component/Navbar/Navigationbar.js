@@ -13,7 +13,7 @@ import Logo from '../../asset/keells_logo.ico';
 function Navigationbar() {
   return (
 
-    <Navbar bg="dark" data-bs-theme="dark"  style={{fontSize: '19px'}}>
+    <Navbar bg="dark" data-bs-theme="dark"  >
       <img src={Logo} className='Logo' />
         <Container>
           {/* <Navbar.Brand>John Keells</Navbar.Brand> */}

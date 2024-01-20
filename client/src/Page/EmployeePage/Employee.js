@@ -273,8 +273,23 @@ function Employee() {
         const get_url=`${baseUrlEmployee}/getAllEmployees`; //end point
         const response = await axios.get(get_url);
         setEmployeeData(response.data);
-        }catch(error) {
-             console.error("Error if fetching employe data",error);
+        }catch (error) {
+          if (axios.isAxiosError(error)) {
+            // Axios error, check if it's a network error
+              if (error.response) {
+                // The request was made, but the server responded with an error status
+                serverResponseFaliur_1();
+              } else if (error.request) {
+                // The request was made, but no response was received
+                serverResponseFaliur_2();
+              } else {
+                // Something went wrong in setting up the request
+                serverResponseFaliur_3();
+              }
+          } else {
+            // Not an Axios error, handle it accordingly
+            serverResponseFaliur_4();
+          }
         }
   }
 
@@ -875,6 +890,7 @@ function Employee() {
               No data or Servee is not up & runnig at this moment. 
               </p>
               <Button variant="light" onClick={()=>fetchEmployeeData()}>Fetch</Button>
+              {/* when the click fetch button in employee component it should call the fetchEmployeeData() */}
           </Alert>:
             ""
         }

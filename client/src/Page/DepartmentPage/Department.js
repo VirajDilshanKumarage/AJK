@@ -72,7 +72,10 @@ function Department() {
   //const for Add department modal
   const [showAdd, setShowAdd] = useState(false);
   const handleCloseAdd = () => setShowAdd(false);
-  const handleShowAdd = () => setShowAdd(true);
+  const handleShowAdd = () => {
+    fetchDepartmentData();//just refreshing department data to check the server is up & running ro down
+    setShowAdd(true)
+  };
 
   //const for Edit department modal
   const [showEdit, setShowEdit] = useState(false);
@@ -165,7 +168,7 @@ function Department() {
   }
 
 
-
+ //save department methodt
   const handleSave=async ()=>{
    
     
@@ -596,6 +599,8 @@ function Department() {
                           No data or Server is not up & runnig at this moment. 
                           </p>
                           <Button variant="light" onClick={()=>fetchDepartmentData()}>Fetch</Button>
+                          {/* when the click fetch button in department component it should  call the fetchDepartmentData() */}
+
                       </Alert>:
                         ""
                     }
