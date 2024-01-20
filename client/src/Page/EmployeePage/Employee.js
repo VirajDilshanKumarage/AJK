@@ -20,6 +20,9 @@ import Card from 'react-bootstrap/Card';
 import Alert from 'react-bootstrap/Alert';
 import Loader from '../../Component/Loader/Loader';
 import { BsFillExclamationTriangleFill } from 'react-icons/bs';
+import { BsFillPersonPlusFill } from 'react-icons/bs';
+import { BsPencil } from 'react-icons/bs';
+import { BsTrash } from 'react-icons/bs';
 
 function Employee() {
 
@@ -795,7 +798,7 @@ function Employee() {
       <div className='EmployeeContent'>
         <h5 className="d-flex justify-content-center align-items-center">Employee Details</h5>
         <hr/>
-        <Button variant="success" onClick={()=>handleShowAdd()} className='AddEmployeeButton'>Add Employee</Button>
+        <Button variant="success" onClick={()=>handleShowAdd()} className='AddEmployeeButton'>Add Employee <BsFillPersonPlusFill className='m-2'/></Button>
         <Table striped bordered hover className='EmployeeTable' >
           <thead>
             <tr>
@@ -827,8 +830,8 @@ function Employee() {
                   <td>{employee.salary.toFixed(2)}</td>
                   <td>{employee.departmentName}</td>
                   <td colSpan={2} className="d-flex justify-content-center align-items-center">
-                    <Button variant="primary" onClick={() => handleEdit(employee.employeeId)}>Edit</Button> &nbsp;
-                    <Button variant="danger" onClick={() => { setempIDToDelete(employee.employeeId); handleShowDelete();}}>Delete</Button>
+                    <Button variant="primary" onClick={() => handleEdit(employee.employeeId)}>Edit<BsPencil className='m-1'/></Button> &nbsp;
+                    <Button variant="danger" onClick={() => { setempIDToDelete(employee.employeeId); handleShowDelete();}}>Delete <BsTrash className='m-1'/></Button>
                   </td>
                 </tr>
               ))

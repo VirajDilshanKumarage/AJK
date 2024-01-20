@@ -9,6 +9,10 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import Employee from '../EmployeePage/Employee';
 import { BsFillExclamationTriangleFill } from 'react-icons/bs';
+import { BsBuilding } from 'react-icons/bs';
+import { BsPencil } from 'react-icons/bs';
+import { BsTrash } from 'react-icons/bs';
+
 
 
 function Department() {
@@ -481,7 +485,7 @@ function Department() {
   
  
 
-              return (
+  return (
 
                 <>
                 
@@ -540,7 +544,7 @@ function Department() {
                   <div className='DepartmentContent'>
                     <h5 className="d-flex justify-content-center align-items-center" >Department Details</h5> 
                     <hr/>
-                    <Button variant="success" onClick={()=>handleShowAdd()} className='AddDepartmentButton'>Add Department</Button>
+                    <Button variant="success" onClick={()=>handleShowAdd()} className='AddDepartmentButton'>Add Department<BsBuilding className='m-2'/></Button>
                       <Table striped bordered hover className='DepartmentTable'>
                     <thead>
                       <tr >
@@ -557,8 +561,8 @@ function Department() {
                                   <td>{department.departmentCode}</td>
                                   <td>{department.departmentName}</td>
                                   <td className="d-flex justify-content-center align-items-center">
-                                      <Button variant='primary' onClick={()=>{getDepartmentById(department.departmentId); setdepartmentIdNeedToUpdate(department.departmentId); handleShowEdit()}} >Edit</Button> &nbsp;
-                                      <Button variant='danger' onClick={()=>{setDepartmentIdNeedToDelete(department.departmentId); handleShowDelete();}}>Delete</Button>
+                                      <Button variant='primary' onClick={()=>{getDepartmentById(department.departmentId); setdepartmentIdNeedToUpdate(department.departmentId); handleShowEdit()}} >Edit<BsPencil className='m-1'/></Button> &nbsp;
+                                      <Button variant='danger' onClick={()=>{setDepartmentIdNeedToDelete(department.departmentId); handleShowDelete();}}>Delete<BsTrash className='m-1'/></Button>
                                   </td>
                               </tr>
                         ):""
