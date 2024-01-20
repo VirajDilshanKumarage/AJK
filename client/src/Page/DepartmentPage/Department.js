@@ -117,7 +117,22 @@ function Department() {
       const response = await axios.get(get_url);
       setDepartmentData(response.data);
       }catch(error) {
-           console.error("Error if fetching employe data",error);
+        if (axios.isAxiosError(error)) {
+          // Axios error, check if it's a network error
+            if (error.response) {
+              // The request was made, but the server responded with an error status
+              serverResponseFaliur_1();
+            } else if (error.request) {
+              // The request was made, but no response was received
+              serverResponseFaliur_2();
+            } else {
+              // Something went wrong in setting up the request
+              serverResponseFaliur_3();
+            }
+        } else {
+          // Not an Axios error, handle it accordingly
+          serverResponseFaliur_4();
+        }
       }
   }
 
@@ -500,7 +515,7 @@ function Department() {
                       <Alert variant='warning'>
                         <div className="d-flex align-items-center">
                           <div>
-                            <Alert.Heading>Action is restricted ! <br></br>Server may be down&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <BsFillExclamationTriangleFill className="mr-2" /></Alert.Heading> 
+                            <Alert.Heading>Ooops ! <br></br>Server may be down&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <BsFillExclamationTriangleFill className="mr-2" /></Alert.Heading> 
                             <br></br>
                             <br></br>
                             <p>

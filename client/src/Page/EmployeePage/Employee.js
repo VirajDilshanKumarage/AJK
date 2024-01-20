@@ -28,18 +28,18 @@ function Employee() {
   //const for server error
   const [serverErrorMessage,setServerErrorMessage]=useState('');
 
-   //const fro Server error alert box :- showAlertServerError
-   const [showAlertServerError, setShowAlertServerError] = useState(false);
-   const handleCloseAlertServerError = () => {
+  //const fro Server error alert box :- showAlertServerError
+  const [showAlertServerError, setShowAlertServerError] = useState(false);
+  const handleCloseAlertServerError = () => {
      setShowAlertServerError(false);
      setServerErrorMessage('');
-   }
-   const handleShowAlertServerError = () => {
+  }
+  const handleShowAlertServerError = () => {
      handleCloseAdd();
      handleCloseDelete();
      handleCloseEdit();
      setShowAlertServerError(true);
-   }
+  }
    
 
   //function for server down error 1
@@ -61,7 +61,7 @@ function Employee() {
   }
 
    //function for server down error 4
-   function serverResponseFaliur_4(){
+  function serverResponseFaliur_4(){
     setServerErrorMessage("An error occurred. Please try again later.");
     handleShowAlertServerError();
   }
@@ -69,52 +69,45 @@ function Employee() {
    
 
 
-  /**
-   * This function written to handle all the mappings and data validation for for employee model
-   */
+ 
 
-  /** BEGIN fetchDepartmentData()  */
+  /** BEGIN fetchDepartmentData()  
+   * This function written to handle all the mappings and data validation in  employee model to validate department input field
+   */
   const baseUrlDepartment='http://localhost:5148/api/Departments';
   const [departmentData,setDepartmentData]=useState([]);
 
-    const fetchDepartmentData=async ()=>{
+  const fetchDepartmentData=async ()=>{
       
-      try {
+    try{
       const get_url = `${baseUrlDepartment}/getAllDepartment`;
       const response = await axios.get(get_url);
       setDepartmentData(response.data);
-    } catch (error) {
+    }catch (error) {
       if (axios.isAxiosError(error)) {
         // Axios error, check if it's a network error
-        if (error.response) {
-          // The request was made, but the server responded with an error status
-          console.error('Request made, but server responded with an error:', error.response.data);
-          alert('Server responded with an error. Please try again.');
-        } else if (error.request) {
-          // The request was made, but no response was received
-          console.error('No response received from the server:', error.request);
-          alert('No response received from the server. Please try again later.');
-        } else {
-          // Something went wrong in setting up the request
-          console.error('Error setting up the request:', error.message);
-          alert('Error setting up the request. Please try again.');
-        }
+          if (error.response) {
+            // The request was made, but the server responded with an error status
+            serverResponseFaliur_1();
+          } else if (error.request) {
+            // The request was made, but no response was received
+            serverResponseFaliur_2();
+          } else {
+            // Something went wrong in setting up the request
+            serverResponseFaliur_3();
+          }
       } else {
         // Not an Axios error, handle it accordingly
-        console.error('Non-Axios error occurred:', error);
-        alert('An error occurred. Please try again later.');
+        serverResponseFaliur_4();
       }
     }
-    }
+  }
 
-    useEffect(()=>{
-      fetchDepartmentData();
-    },[])
+  useEffect(()=>{
+      fetchDepartmentData(); //to refreshing only the department data
+  },[])
   /** End fetchDepartmentData()  */
 
-
-
-  
 
   //base usrl for employee model
   const baseUrlEmployee = 'http://localhost:5148/api/Employees';
@@ -138,7 +131,6 @@ function Employee() {
 
   //popup the calender
   const datePickerRef = useState(null);
-
   const openDatePicker = () => {
     if (datePickerRef.current) {
       datePickerRef.current.setOpen(true);
@@ -172,19 +164,19 @@ function Employee() {
   }
 
 
-   //validation const for edit form error message
-   const [errorMessageEdit,setErrorMessageEdit] = useState('');
-   const [errorMessageNICEdit,setErrorMessageNICEdit] = useState('');
-   const [errorMessageFirstNameEdit,setErrorMessageFirstNameEdit] = useState('');
-   const [errorMessageLastNameEdit,setErrorMessageLastNameEdit] = useState('');
-   const [errorMessageEmailAddressEdit,setErrorMessageEmailAddressEdit] = useState('');
-   const [errorMessageMobileNumberEdit,setErrorMessageMobileNumberEdit] = useState('');
-   const [errorMessageDateOfBirthEdit,setErrorMessageDateOfBirthEdit] = useState('');
-   const [errorMessageGenderEdit,setErrorMessageGenderEdit] = useState('');
-   const [errorMessageSalaryEdit,setErrorMessageSalaryEdit] = useState('');
-   const [errorMessageDepartmentEdit,setErrorMessageDepartmentEdit] = useState('');
-   //clear error message which in edit model
-   const clearErrorMessageEdit=()=>{
+  //validation const for edit form error message
+  const [errorMessageEdit,setErrorMessageEdit] = useState('');
+  const [errorMessageNICEdit,setErrorMessageNICEdit] = useState('');
+  const [errorMessageFirstNameEdit,setErrorMessageFirstNameEdit] = useState('');
+  const [errorMessageLastNameEdit,setErrorMessageLastNameEdit] = useState('');
+  const [errorMessageEmailAddressEdit,setErrorMessageEmailAddressEdit] = useState('');
+  const [errorMessageMobileNumberEdit,setErrorMessageMobileNumberEdit] = useState('');
+  const [errorMessageDateOfBirthEdit,setErrorMessageDateOfBirthEdit] = useState('');
+  const [errorMessageGenderEdit,setErrorMessageGenderEdit] = useState('');
+  const [errorMessageSalaryEdit,setErrorMessageSalaryEdit] = useState('');
+  const [errorMessageDepartmentEdit,setErrorMessageDepartmentEdit] = useState('');
+  //clear error message which in edit model
+  const clearErrorMessageEdit=()=>{
     setErrorMessageEdit('');
     setErrorMessageNICEdit('');
     setErrorMessageFirstNameEdit('');
@@ -195,7 +187,7 @@ function Employee() {
     setErrorMessageGenderEdit('');
     setErrorMessageSalaryEdit('');
     setErrorMessageDepartmentEdit('');
-   }
+  }
 
 
   //save employee data
@@ -255,10 +247,8 @@ function Employee() {
 
 
   const [employeeData, setEmployeeData] = useState([]);
-
   //fetching all employees
-  const fetchEmployeeData=async ()=>{
-      
+  const fetchEmployeeData=async ()=>{  
         try{
         const get_url=`${baseUrlEmployee}/getAllEmployees`; //end point
         const response = await axios.get(get_url);
@@ -269,17 +259,17 @@ function Employee() {
   }
 
   useEffect(()=>{
-       fetchEmployeeData();
+       fetchEmployeeData(); //refresh the employee data only without refreshing whole web page:- using useEffect
   },[])
 
 
  
 
-  //adding
+  //adding ne employee
   const handleSave = async ()=>{
       
-         const post_url =`${baseUrlEmployee}/saveNewEmployee`; // end point
-         const data = {
+          const post_url =`${baseUrlEmployee}/saveNewEmployee`; // end point
+          const data = {
           "nicNumber": nicNumberSave,
           "firstName": firstNameSave,
           "lastName": lastNameSave,
@@ -289,12 +279,12 @@ function Employee() {
           "gender": genderSave,
           "salary": salarySave,
           "departmentId": departmentIdSave
-        }
-        console.log(data); // just render data in console
+          }
+          console.log(data); // just render data in console
         
-        clearErrorMessageSave();
+          clearErrorMessageSave();//just error messages for save madal
 
-        // validation for add for
+          // validation for all fields in add modal :- all fields are required
           function isDataFilled(data) {
             if(data.dateOfBirth==''){
               setErrorMessage("All fields are required");
@@ -309,27 +299,28 @@ function Employee() {
             setErrorMessage('');
             return true;
           }
-
-          function nicValidation(data){
-            fetchEmployeeData();
-
-            for (const employee of employeeData) {
-              if (employee.nicNumber === data.nicNumber) {
-                  setErrorMessageNIC("NIC already used by another employee");
-                  return false;
-              }
-          }
-
           
-            if(data.nicNumber.length===12 || data.nicNumber.length===10){
-              setErrorMessageNIC('');
-              return true;
-            }
-            setErrorMessageNIC("Enter a valid nic number");
-            return false;
+          //validation for nic number in add modal
+          function nicValidation(data){
+              fetchEmployeeData();
+
+              for (const employee of employeeData) {
+                if (employee.nicNumber === data.nicNumber) {
+                    setErrorMessageNIC("NIC already used by another employee");
+                    return false;
+                }
+              }
+
+            
+              if(data.nicNumber.length===12 || data.nicNumber.length===10){
+                setErrorMessageNIC('');
+                return true;
+              }
+              setErrorMessageNIC("Enter a valid nic number");
+              return false;
           }
 
-
+          //validation for first name field in add modal
           function firstNameValidation(data){
             if(data.firstName.length>1 && !/\d/.test(data.firstName)){
                setErrorMessageFirstName('');
@@ -338,7 +329,8 @@ function Employee() {
             setErrorMessageFirstName("Enter valid name for first name");
             return false
           }
-
+          
+          //validation for last name field in add modal
           function lastNameValidation(data){
             if(data.lastName.length>1 && !/\d/.test(data.lastName)){
                setErrorMessageLastName('');
@@ -347,7 +339,8 @@ function Employee() {
             setErrorMessageLastName("Enter valid name for last name");
             return false
           }
-
+          
+          //validation for email address field in add modal
           function emailAddressValidation(data){
             if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.emailAddress)){
               setErrorMessageEmailAddress('');
@@ -357,7 +350,7 @@ function Employee() {
             return false;
           }
           
-
+          //validation for mobile number field in add modal
           function mobileNumberValidation(data){
             if(data.mobileNumber.length===10 &&  /^\d+$/.test(data.mobileNumber)){
               setErrorMessageMobileNumber('');
@@ -366,7 +359,8 @@ function Employee() {
             setErrorMessageMobileNumber('Enter valid mobile number eg: 0777111222');
             return false;
           }
-
+          
+          //validation for date of birth field in add modal
           function dateOfBirthValidation(data) {
             if (data.dateOfBirth === '') {
               setErrorMessageDateOfBirth("Set birthday");
@@ -397,7 +391,7 @@ function Employee() {
             return false;
           }
           
-
+          //validation for gender field add modal
           function genderValidation(data){
              if(data.gender.toLowerCase()==='male' || data.gender.toLowerCase()==='female'){
                   setErrorMessageGender('');
@@ -407,6 +401,7 @@ function Employee() {
              return false;
           }
 
+          //validation for salary field add modal
           function salaryValidation(data){
             if(data.salary>=500.00 && /^\d+(\.\d+)?$/.test(data.salary)){
               setErrorMessageSalary('')
@@ -416,23 +411,23 @@ function Employee() {
             return false;
           }
 
-
+          //validation for department field add modal
           function departmentValidation(data){
                  fetchDepartmentData();
                  console.log(departmentData);
-                 if(departmentData && departmentData.length>0){
+                  if(departmentData && departmentData.length>0){
 
-                      for (const department of departmentData) {
-                        if (department.departmentId == data.departmentId) {
-                            setErrorMessageDepartment('');
-                            return true;
+                        for (const department of departmentData) {
+                            if (department.departmentId == data.departmentId) {
+                                setErrorMessageDepartment('');
+                                return true;
+                            }
+                          setErrorMessageDepartment('Select an existing department');
+                          return false;
                         }
-                        setErrorMessageDepartment('Select an existing department');
-                       return false;
-                      }
-                      
-                 
-                 }
+                        
+                  
+                  }
                  setErrorMessageDepartment('There are no any department, Add a department first');
                  return false;
 
@@ -441,8 +436,8 @@ function Employee() {
         
         
        
-
-           if(isDataFilled(data) && nicValidation(data) && firstNameValidation(data) && lastNameValidation(data) && emailAddressValidation(data) 
+          //checking all the validation for add modal
+          if(isDataFilled(data) && nicValidation(data) && firstNameValidation(data) && lastNameValidation(data) && emailAddressValidation(data) 
               && mobileNumberValidation(data) && dateOfBirthValidation(data) && genderValidation(data) && salaryValidation(data) && departmentValidation(data)){
 
                 try {
@@ -452,34 +447,30 @@ function Employee() {
                   clearSave();
                   toast.success('New employee added successfully');
                 } catch (error) {
-                  if (axios.isAxiosError(error)) {
-                    // Axios error, check if it's a network error
-                    if (error.response) {
-                      // The request was made, but the server responded with an error status
-                      console.error('Request made, but server responded with an error:', error.response.data);
-                      alert('Server responded with an error. Please check your input and try again.');
+                    if (axios.isAxiosError(error)) {
+                        // Axios error, check if it's a network error
+                          if (error.response) {
+                            // The request was made, but the server responded with an error status
+                            serverResponseFaliur_1();
 
-                    } else if (error.request) {
-                      // The request was made, but no response was received
-                      console.error('No response received from the server:', error.request);
-                      alert('No response received from the server. Please try again later.');
+                          } else if (error.request) {
+                            // The request was made, but no response was received
+                            serverResponseFaliur_2();
+                          } else {
+                            // Something went wrong in setting up the request
+                            serverResponseFaliur_3();
+                          }
                     } else {
-                      // Something went wrong in setting up the request
-                      console.error('Error setting up the request:', error.message);
-                      alert('Error setting up the request. Please try again.');
+                      // Not an Axios error, handle it accordingly
+                      serverResponseFaliur_4();
                     }
-                  } else {
-                    // Not an Axios error, handle it accordingly
-                    console.error('Non-Axios error occurred:', error);
-                    alert('An error occurred. Please try again later.');
-                  }
                 }
               
-           }else{
+          }else{
                
                toast.error("Employee details are invalid");
                return;
-           }
+          }
 
 
          
@@ -869,7 +860,7 @@ function Employee() {
                       <Alert variant='warning'>
                         <div className="d-flex align-items-center">
                           <div>
-                            <Alert.Heading>Action is restricted ! <br></br>Server may be down&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <BsFillExclamationTriangleFill className="mr-2" /></Alert.Heading> 
+                            <Alert.Heading>Ooops ! <br></br>Server may be down&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <BsFillExclamationTriangleFill className="mr-2" /></Alert.Heading> 
                             <br></br>
                             <br></br>
                             <p>
