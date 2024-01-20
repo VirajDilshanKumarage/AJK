@@ -19,12 +19,53 @@ import { redirectDocument } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Alert from 'react-bootstrap/Alert';
 import Loader from '../../Component/Loader/Loader';
+import { BsFillExclamationTriangleFill } from 'react-icons/bs';
 
 function Employee() {
 
 
-  //const for set error message when the serve is down
-  const [serverDownError,setserverDownError]=useState('');
+  /** server faliures handle BEGIN ->AS follows*/
+  //const for server error
+  const [serverErrorMessage,setServerErrorMessage]=useState('');
+
+   //const fro Server error alert box :- showAlertServerError
+   const [showAlertServerError, setShowAlertServerError] = useState(false);
+   const handleCloseAlertServerError = () => {
+     setShowAlertServerError(false);
+     setServerErrorMessage('');
+   }
+   const handleShowAlertServerError = () => {
+     handleCloseAdd();
+     handleCloseDelete();
+     handleCloseEdit();
+     setShowAlertServerError(true);
+   }
+   
+
+  //function for server down error 1
+  function serverResponseFaliur_1(){
+    setServerErrorMessage("Server responded with an error. Please check your input and try again.");
+    handleShowAlertServerError();
+  }
+
+  //function for server down error 2
+  function serverResponseFaliur_2(){
+    setServerErrorMessage("No response received from the server. Please try again later.");
+    handleShowAlertServerError();
+  }
+
+  //function for server down error 3
+  function serverResponseFaliur_3(){
+    setServerErrorMessage("Error setting up the request. Please try again.");
+    handleShowAlertServerError();
+  }
+
+   //function for server down error 4
+   function serverResponseFaliur_4(){
+    setServerErrorMessage("An error occurred. Please try again later.");
+    handleShowAlertServerError();
+  }
+  /**END server faliures handled */
    
 
 
@@ -469,28 +510,24 @@ function Employee() {
         }
         
       
-    }catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Axios error, check if it's a network error
-        if (error.response) {
-          // The request was made, but the server responded with an error status
-          console.error('Request made, but server responded with an error:', error.response.data);
-          alert('Server responded with an error. Please check your input and try again.');
-        } else if (error.request) {
-          // The request was made, but no response was received
-          console.error('No response received from the server:', error.request);
-          alert('No response received from the server. Please try again later.');
-        } else {
-          // Something went wrong in setting up the request
-          console.error('Error setting up the request:', error.message);
-          alert('Error setting up the request. Please try again.');
-        }
-      } else {
+      }catch (error) {
+          if (axios.isAxiosError(error)){
+            // Axios error, check if it's a network error
+            if (error.response) {
+              // The request was made, but the server responded with an error status
+              serverResponseFaliur_1();
+            } else if (error.request) {
+              // The request was made, but no response was received
+              serverResponseFaliur_2();
+            } else {
+              // Something went wrong in setting up the request
+              serverResponseFaliur_3();
+            }
+          }else {
         // Not an Axios error, handle it accordingly
-        console.error('Non-Axios error occurred:', error);
-        alert('An error occurred. Please try again later.');
+        serverResponseFaliur_4();
+          }
       }
-    }
   }
 
 
@@ -499,7 +536,6 @@ function Employee() {
     
      handleShowEdit();
      setEmpID(_employeeId); //set the empID to use in handleUpdate() 
-
      getEmployeeById(_employeeId);  
     
     
@@ -508,9 +544,7 @@ function Employee() {
 
   //handle update this is the fuction to update data in database
   const handleUpdate=()=>{
-    
-
-       
+  
       const UpdateEmployee =async (_employeeId)=>{
       const put_url = `${baseUrlEmployee}/updateEmployee/${_employeeId}`;
   
@@ -543,10 +577,8 @@ function Employee() {
         }
         setErrorMessageEdit('');
         return true;
-     }
+      }
     
-
-     
 
       function nicValidationEdit(updatedData){
 
@@ -687,21 +719,17 @@ function Employee() {
             // Axios error, check if it's a network error
             if (error.response) {
               // The request was made, but the server responded with an error status
-              console.error('Request made, but server responded with an error:', error.response.data);
-              alert('Server responded with an error. Please check your input and try again.');
+              serverResponseFaliur_1();
             } else if (error.request) {
               // The request was made, but no response was received
-              console.error('No response received from the server:', error.request);
-              alert('No response received from the server. Please try again later.');
+              serverResponseFaliur_2();
             } else {
               // Something went wrong in setting up the request
-              console.error('Error setting up the request:', error.message);
-              alert('Error setting up the request. Please try again.');
+              serverResponseFaliur_3();
             }
           } else {
             // Not an Axios error, handle it accordingly
-            console.error('Non-Axios error occurred:', error);
-            alert('An error occurred. Please try again later.');
+            serverResponseFaliur_4();
           }
         }
 
@@ -710,17 +738,14 @@ function Employee() {
           setEmpID(0); // once update is complete then reset the empID
 
         }
-        else{
+      else{
           toast.error("Employee details are invalid");
           return;
-        }
+      }
 
     }
 
     UpdateEmployee(empID);
-     
-  
-      
 
   }
 
@@ -751,21 +776,17 @@ function Employee() {
           // Axios error, check if it's a network error
           if (error.response) {
             // The request was made, but the server responded with an error status
-            console.error('Request made, but server responded with an error:', error.response.data);
-            alert('Server responded with an error. Please try again.');
+            serverResponseFaliur_1();
           } else if (error.request) {
             // The request was made, but no response was received
-            console.error('No response received from the server:', error.request);
-            alert('No response received from the server. Please try again later.');
+            serverResponseFaliur_2();
           } else {
             // Something went wrong in setting up the request
-            console.error('Error setting up the request:', error.message);
-            alert('Error setting up the request. Please try again.');
+            serverResponseFaliur_3();
           }
         } else {
           // Not an Axios error, handle it accordingly
-          console.error('Non-Axios error occurred:', error);
-          alert('An error occurred. Please try again later.');
+          serverResponseFaliur_4();
         }
       }
 
@@ -776,397 +797,404 @@ function Employee() {
   
 
 
-  return (
+    return (
     <>
-    <ToastContainer />
-    <div className='EmployeeBackground'>
-    <div className='EmployeeContent'>
-      <h5 className="d-flex justify-content-center align-items-center">Employee Details</h5>
-      <hr/>
-      <Button variant="success" onClick={()=>handleShowAdd()} className='AddEmployeeButton'>Add Employee</Button>
-      <Table striped bordered hover className='EmployeeTable' >
-        <thead>
-          <tr>
-            <th className="text-center">NIC</th>
-            <th className="text-center">First Name</th>
-            <th className="text-center">Last Name</th>
-            <th className="text-center">Email Address</th>
-            <th className="text-center">Mobile Number</th>
-            <th className="text-center">Date of Birth</th>
-            <th className="text-center">Age</th>
-            <th className="text-center">Gender</th>
-            <th className="text-center">Salary</th>
-            <th className="text-center">Department Name</th>
-            <th className="text-center">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {employeeData && employeeData.length > 0 ?
-            employeeData.map((employee) => (
-              <tr key={employee.employeeId}>
-                <td>{employee.nicNumber}</td>
-                <td>{employee.firstName}</td>
-                <td>{employee.lastName}</td>
-                <td>{employee.emailAddress}</td>
-                <td>{employee.mobileNumber}</td>
-                <td>{new Date(employee.dateOfBirth).toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}</td>
-                <td>{employee.age}</td>
-                <td>{employee.gender}</td>
-                <td>{employee.salary.toFixed(2)}</td>
-                <td>{employee.departmentName}</td>
-                <td colSpan={2} className="d-flex justify-content-center align-items-center">
-                  <Button variant="primary" onClick={() => handleEdit(employee.employeeId)}>Edit</Button> &nbsp;
-                  <Button variant="danger" onClick={() => { setempIDToDelete(employee.employeeId); handleShowDelete();}}>Delete</Button>
-                </td>
-              </tr>
-            ))
-            :""
+      <ToastContainer />
+      <div className='EmployeeBackground'>
+      <div className='EmployeeContent'>
+        <h5 className="d-flex justify-content-center align-items-center">Employee Details</h5>
+        <hr/>
+        <Button variant="success" onClick={()=>handleShowAdd()} className='AddEmployeeButton'>Add Employee</Button>
+        <Table striped bordered hover className='EmployeeTable' >
+          <thead>
+            <tr>
+              <th className="text-center">NIC</th>
+              <th className="text-center">First Name</th>
+              <th className="text-center">Last Name</th>
+              <th className="text-center">Email Address</th>
+              <th className="text-center">Mobile Number</th>
+              <th className="text-center">Date of Birth</th>
+              <th className="text-center">Age</th>
+              <th className="text-center">Gender</th>
+              <th className="text-center">Salary</th>
+              <th className="text-center">Department Name</th>
+              <th className="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {employeeData && employeeData.length > 0 ?
+              employeeData.map((employee) => (
+                <tr key={employee.employeeId}>
+                  <td>{employee.nicNumber}</td>
+                  <td>{employee.firstName}</td>
+                  <td>{employee.lastName}</td>
+                  <td>{employee.emailAddress}</td>
+                  <td>{employee.mobileNumber}</td>
+                  <td>{new Date(employee.dateOfBirth).toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}</td>
+                  <td>{employee.age}</td>
+                  <td>{employee.gender}</td>
+                  <td>{employee.salary.toFixed(2)}</td>
+                  <td>{employee.departmentName}</td>
+                  <td colSpan={2} className="d-flex justify-content-center align-items-center">
+                    <Button variant="primary" onClick={() => handleEdit(employee.employeeId)}>Edit</Button> &nbsp;
+                    <Button variant="danger" onClick={() => { setempIDToDelete(employee.employeeId); handleShowDelete();}}>Delete</Button>
+                  </td>
+                </tr>
+              ))
+              :""
 
-            }
-        </tbody>
+              }
+          </tbody>
+          
+        </Table>
+  
+        { employeeData && employeeData.length === 0 ?
+            <Alert variant="danger"  dismissible>
+            <Alert.Heading>Oh snap! You got an error! Data is not Loaded</Alert.Heading>
+            <p>
+              No data or Servee is not up & runnig at this moment. 
+              </p>
+              <Button variant="light" onClick={()=>fetchEmployeeData()}>Fetch</Button>
+          </Alert>:
+            ""
+        }
         
-      </Table>
- 
-      { employeeData && employeeData.length === 0 ?
-           <Alert variant="danger"  dismissible>
-           <Alert.Heading>Oh snap! You got an error! Data is not Loaded</Alert.Heading>
-           <p>
-             No data or Servee is not up & runnig at this moment. 
-            </p>
-            <Button variant="light" onClick={()=>fetchEmployeeData()}>Fetch</Button>
-         </Alert>:
-          ""
-       }
-      
-    </div>
-    </div>
+      </div>
+      </div>
 
 
+      {/* alert box for show server error eg:- server down*/}
+      <Modal show={showAlertServerError} variant='danger'>
+                    <Modal.Body>
+                      <Alert variant='warning'>
+                        <div className="d-flex align-items-center">
+                          <div>
+                            <Alert.Heading>Action is restricted ! <br></br>Server may be down&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <BsFillExclamationTriangleFill className="mr-2" /></Alert.Heading> 
+                            <br></br>
+                            <br></br>
+                            <p>
+                              {serverErrorMessage}
+                            </p>
+                          </div>
+                        </div>
+                        <hr />
+                        <div className="d-flex justify-content-end">
+                          <Button onClick={() => handleCloseAlertServerError()} variant="outline-dark">
+                            Got it
+                          </Button>
+                        </div>
+                      </Alert>
+                    </Modal.Body>
+      </Modal>
 
 
-     {/* add modal */}
-     <Modal show={showAdd} onHide={handleCloseAdd}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add Employee</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-                 <div>{errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}</div>
-                  <Form.Label htmlFor="nic">nic</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="nicSave"
-                    aria-describedby="nicHelpBlock"
-                    value={nicNumberSave}
-                    onChange={(e)=>setNicNumberSave(e.target.value)}
-                  />
-                  {errorMessageNIC && <div style={{ color: 'red' }}>{errorMessageNIC}</div>}
-                  <br></br>
-
-                  <Form.Label htmlFor="firstname">firstName</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="firstNameSave"
-                    aria-describedby="firstNameHelpBlock"
-                    value={firstNameSave}
-                    onChange={(e)=>setFirstNameSave(e.target.value)}
-                  />
-                  {errorMessageFirstName && <div style={{ color: 'red' }}>{errorMessageFirstName}</div>}
-
-                  <br></br>
-
-                  <Form.Label htmlFor="lastName">lastName</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="lastNameSave"
-                    aria-describedby="lastNameHelpBlock"
-                    value={lastNameSave}
-                    onChange={(e)=>setLastNameSave(e.target.value)}
-                  />
-                  {errorMessageLastName && <div style={{ color: 'red' }}>{errorMessageLastName}</div>}
-
-
-                  <br></br>
-                  <Form.Label htmlFor="email">emailAddress</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="emailSave"
-                    aria-describedby="emailHelpBlock"
-                    value={emailAddressSave}
-                    onChange={(e)=>setEmailAddressSave(e.target.value)}
-                  />
-                  {errorMessageEmailAddress && <div style={{ color: 'red' }}>{errorMessageEmailAddress}</div>}
-
-                   <br></br>
-                  <Form.Label htmlFor="mobile">mobileNumber</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="mobileSave"
-                    aria-describedby="mobileHelpBlock"
-                    value={mobileNumberSave}
-                    onChange={(e)=>setMobileNumberSave(e.target.value)}
-                  />
-                  {errorMessageMobileNumber && <div style={{ color: 'red' }}>{errorMessageMobileNumber}</div>}
-
-                  
-                  <br></br>
-                  <Form.Label htmlFor="DOB">Date of Birth</Form.Label>
-                  <div className="input-group">
-                    <DatePicker
-                      id="DOBSave"
-                      selected={dateOfBirthSave}
-                      onChange={(date) => setDateOfBirthSave(date)}
-                      dateFormat="yyyy-MM-dd"
-                      className="form-control"
-                      ref={datePickerRef}
+      {/* add modal */}
+      <Modal show={showAdd} onHide={handleCloseAdd}>
+          <Modal.Header closeButton>
+            <Modal.Title>Add Employee</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+                  <div>{errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}</div>
+                    <Form.Label htmlFor="nic">nic</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="nicSave"
+                      aria-describedby="nicHelpBlock"
+                      value={nicNumberSave}
+                      onChange={(e)=>setNicNumberSave(e.target.value)}
                     />
-                    <div className="input-group-append" onClick={openDatePicker}>
-                      <span className="input-group-text">
-                        <FaCalendar className='FaCalendar'/>
-                      </span>
-                    </div>
-                  </div>
-                  {errorMessageDateOfBirth && <div style={{ color: 'red' }}>{errorMessageDateOfBirth}</div>}
-      
+                    {errorMessageNIC && <div style={{ color: 'red' }}>{errorMessageNIC}</div>}
+                    <br></br>
 
-                  
-                  <br/>
-                  <Form.Label htmlFor="gender">Gender</Form.Label>
-                  <Form.Select
-                    id="genderSave"
-                    aria-describedby="genderHelpBlock"
-                    value={genderSave}
-                    onChange={(e) => setGenderSave(e.target.value)}
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
+                    <Form.Label htmlFor="firstname">firstName</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="firstNameSave"
+                      aria-describedby="firstNameHelpBlock"
+                      value={firstNameSave}
+                      onChange={(e)=>setFirstNameSave(e.target.value)}
+                    />
+                    {errorMessageFirstName && <div style={{ color: 'red' }}>{errorMessageFirstName}</div>}
+
+                    <br></br>
+
+                    <Form.Label htmlFor="lastName">lastName</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="lastNameSave"
+                      aria-describedby="lastNameHelpBlock"
+                      value={lastNameSave}
+                      onChange={(e)=>setLastNameSave(e.target.value)}
+                    />
+                    {errorMessageLastName && <div style={{ color: 'red' }}>{errorMessageLastName}</div>}
+
+
+                    <br></br>
+                    <Form.Label htmlFor="email">emailAddress</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="emailSave"
+                      aria-describedby="emailHelpBlock"
+                      value={emailAddressSave}
+                      onChange={(e)=>setEmailAddressSave(e.target.value)}
+                    />
+                    {errorMessageEmailAddress && <div style={{ color: 'red' }}>{errorMessageEmailAddress}</div>}
+
+                    <br></br>
+                    <Form.Label htmlFor="mobile">mobileNumber</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="mobileSave"
+                      aria-describedby="mobileHelpBlock"
+                      value={mobileNumberSave}
+                      onChange={(e)=>setMobileNumberSave(e.target.value)}
+                    />
+                    {errorMessageMobileNumber && <div style={{ color: 'red' }}>{errorMessageMobileNumber}</div>}
+
                     
-                  </Form.Select>
-                  {errorMessageGender && <div style={{ color: 'red' }}>{errorMessageGender}</div>}
-
-
-                  
-                   <br></br>
-                  <Form.Label htmlFor="salary">salary</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="salarySave"
-                    aria-describedby="salaryHelpBlock"
-                    value={salarySave}
-                    onChange={(e)=>setSalarySave(e.target.value)}
-                  />
-                  {errorMessageSalary && <div style={{ color: 'red' }}>{errorMessageSalary}</div>}
-
-                  
-                  <br></br>
-                  <Form.Label htmlFor="department">Department</Form.Label>
-                  <Form.Select
-                    id="departmentSave"
-                    aria-describedby="departmentHelpBlock"
-                    value={departmentIdSave}
-                    onChange={(e) => setDepartmentIdSave(e.target.value)}
-                  >
-                    <option value=''>Select department</option>
-                    {departmentData.map((department) => (
-                      <option key={department.departmentId} value={department.departmentId}>
-                        {department.departmentName}
-                      </option>
-                    ))}
-                  </Form.Select>
-                  {errorMessageDepartment && <div style={{ color: 'red' }}>{errorMessageDepartment}</div>}
-                  
-
-
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseAdd}>
-            Close
-          </Button>
-          <Button variant="success" onClick={handleSave}>
-            Save
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-
-    
-    {/* edit modal */}
-    <Modal show={showEdit} onHide={handleCloseEdit}>
-        <Modal.Header closeButton>
-          <Modal.Title>Update Employee</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-        <div>{errorMessageEdit && <div style={{ color: 'red' }}>{errorMessageEdit}</div>}</div>
-        <Form.Label htmlFor="nic">nic</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="nicEdit"
-                    aria-describedby="nicHelpBlock"
-                    value={nicNumberEdit}
-                    onChange={(e)=>setNicNumberEdit(e.target.value)}
-                  />
-                  {errorMessageNICEdit && <div style={{ color: 'red' }}>{errorMessageNICEdit}</div>}
-                  <br></br>
-
-                  <Form.Label htmlFor="firstname">firstName</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="firstNameEdit"
-                    aria-describedby="firstNameHelpBlock"
-                    value={firstNameEdit}
-                    onChange={(e)=>setFirstNameEdit(e.target.value)}
-                  />
-                  {errorMessageFirstNameEdit && <div style={{ color: 'red' }}>{errorMessageFirstNameEdit}</div>}
-                  <br></br>
-
-                  <Form.Label htmlFor="lastName">lastName</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="lastNameEdit"
-                    aria-describedby="lastNameHelpBlock"
-                    value={lastNameEdit}
-                    onChange={(e)=>setLastNameEdit(e.target.value)}
-                  />
-                  {errorMessageLastNameEdit && <div style={{ color: 'red' }}>{errorMessageLastNameEdit}</div>}
-
-
-                  <br></br>
-                  <Form.Label htmlFor="email">emailAddress</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="emailEdit"
-                    aria-describedby="emailHelpBlock"
-                    value={emailAddressEdit}
-                    onChange={(e)=>setEmailAddressEdit(e.target.value)}
-                  />
-                  {errorMessageEmailAddressEdit && <div style={{ color: 'red' }}>{errorMessageEmailAddressEdit}</div>}
-
-                   <br></br>
-                  <Form.Label htmlFor="mobile">mobileNumber</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="mobileEdit"
-                    aria-describedby="mobileHelpBlock"
-                    value={mobileNumberEdit}
-                    onChange={(e)=>setMobileNumberEdit(e.target.value)}
-                  />
-                  {errorMessageMobileNumberEdit && <div style={{ color: 'red' }}>{errorMessageMobileNumberEdit}</div>}
-
-                  
-                  <br></br>
-                  <Form.Label htmlFor="DOB">Date of Birth</Form.Label>
-                  <div className="input-group">
-                    <DatePicker
-                      id="DOBEdit"
-                      selected={dateOfBirthEdit}
-                      onChange={(date) => setDateOfBirthEdit(date)}
-                      dateFormat="yyyy-MM-dd"
-                      className="form-control"
-                      ref={datePickerRef}
-                    />
-                    <div className="input-group-append" onClick={openDatePicker}>
-                      <span className="input-group-text">
-                        <FaCalendar className='FaCalendar'/>
-                      </span>
+                    <br></br>
+                    <Form.Label htmlFor="DOB">Date of Birth</Form.Label>
+                    <div className="input-group">
+                      <DatePicker
+                        id="DOBSave"
+                        selected={dateOfBirthSave}
+                        onChange={(date) => setDateOfBirthSave(date)}
+                        dateFormat="yyyy-MM-dd"
+                        className="form-control"
+                        ref={datePickerRef}
+                      />
+                      <div className="input-group-append" onClick={openDatePicker}>
+                        <span className="input-group-text">
+                          <FaCalendar className='FaCalendar'/>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  {errorMessageDateOfBirthEdit && <div style={{ color: 'red' }}>{errorMessageDateOfBirthEdit}</div>}
-      
+                    {errorMessageDateOfBirth && <div style={{ color: 'red' }}>{errorMessageDateOfBirth}</div>}
+        
 
-                  
-                  <br/>
-                  <Form.Label htmlFor="gender">Gender</Form.Label>
-                  <Form.Select
-                    id="genderEdit"
-                    aria-describedby="genderHelpBlock"
-                    value={genderEdit}
-                    onChange={(e) => setGenderEdit(e.target.value)}
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </Form.Select>
-                  {errorMessageGenderEdit && <div style={{ color: 'red' }}>{errorMessageGenderEdit}</div>}
+                    
+                    <br/>
+                    <Form.Label htmlFor="gender">Gender</Form.Label>
+                    <Form.Select
+                      id="genderSave"
+                      aria-describedby="genderHelpBlock"
+                      value={genderSave}
+                      onChange={(e) => setGenderSave(e.target.value)}
+                    >
+                      <option value="">Select Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      
+                    </Form.Select>
+                    {errorMessageGender && <div style={{ color: 'red' }}>{errorMessageGender}</div>}
 
 
-                  
-                   <br></br>
-                  <Form.Label htmlFor="salary">salary</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="salaryEdit"
-                    aria-describedby="salaryHelpBlock"
-                    value={salaryEdit}
-                    onChange={(e)=>setSalaryEdit(e.target.value)}
-                  />
-                  {errorMessageSalaryEdit && <div style={{ color: 'red' }}>{errorMessageSalaryEdit}</div>}
+                    
+                    <br></br>
+                    <Form.Label htmlFor="salary">salary</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="salarySave"
+                      aria-describedby="salaryHelpBlock"
+                      value={salarySave}
+                      onChange={(e)=>setSalarySave(e.target.value)}
+                    />
+                    {errorMessageSalary && <div style={{ color: 'red' }}>{errorMessageSalary}</div>}
 
-                  
-                  <br></br>
-                  <Form.Label htmlFor="department">Department</Form.Label>
-                  <Form.Select
-                    id="departmentEdit"
-                    aria-describedby="departmentHelpBlock"
-                    value={departmentIdEdit}
-                    onChange={(e) => setDepartmentIdEdit(e.target.value)}
-                  >
-                    <option value=''>Select department</option>
-                    {departmentData.map((department) => (
-                      <option key={department.departmentId} value={department.departmentId}>
-                        {department.departmentName}
-                      </option>
-                    ))}
-                  </Form.Select>
-                  {errorMessageDepartmentEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentEdit}</div>}
-                  
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseEdit}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={()=>handleUpdate()}>
-            Update
-          </Button>
-        </Modal.Footer>
+                    
+                    <br></br>
+                    <Form.Label htmlFor="department">Department</Form.Label>
+                    <Form.Select
+                      id="departmentSave"
+                      aria-describedby="departmentHelpBlock"
+                      value={departmentIdSave}
+                      onChange={(e) => setDepartmentIdSave(e.target.value)}
+                    >
+                      <option value=''>Select department</option>
+                      {departmentData.map((department) => (
+                        <option key={department.departmentId} value={department.departmentId}>
+                          {department.departmentName}
+                        </option>
+                      ))}
+                    </Form.Select>
+                    {errorMessageDepartment && <div style={{ color: 'red' }}>{errorMessageDepartment}</div>}
+                    
+
+
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseAdd}>
+              Close
+            </Button>
+            <Button variant="success" onClick={handleSave}>
+              Save
+            </Button>
+          </Modal.Footer>
       </Modal>
+
       
-      
-      
+      {/* edit modal */}
+      <Modal show={showEdit} onHide={handleCloseEdit}>
+          <Modal.Header closeButton>
+            <Modal.Title>Update Employee</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+          <div>{errorMessageEdit && <div style={{ color: 'red' }}>{errorMessageEdit}</div>}</div>
+          <Form.Label htmlFor="nic">nic</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="nicEdit"
+                      aria-describedby="nicHelpBlock"
+                      value={nicNumberEdit}
+                      onChange={(e)=>setNicNumberEdit(e.target.value)}
+                    />
+                    {errorMessageNICEdit && <div style={{ color: 'red' }}>{errorMessageNICEdit}</div>}
+                    <br></br>
+
+                    <Form.Label htmlFor="firstname">firstName</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="firstNameEdit"
+                      aria-describedby="firstNameHelpBlock"
+                      value={firstNameEdit}
+                      onChange={(e)=>setFirstNameEdit(e.target.value)}
+                    />
+                    {errorMessageFirstNameEdit && <div style={{ color: 'red' }}>{errorMessageFirstNameEdit}</div>}
+                    <br></br>
+
+                    <Form.Label htmlFor="lastName">lastName</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="lastNameEdit"
+                      aria-describedby="lastNameHelpBlock"
+                      value={lastNameEdit}
+                      onChange={(e)=>setLastNameEdit(e.target.value)}
+                    />
+                    {errorMessageLastNameEdit && <div style={{ color: 'red' }}>{errorMessageLastNameEdit}</div>}
+
+
+                    <br></br>
+                    <Form.Label htmlFor="email">emailAddress</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="emailEdit"
+                      aria-describedby="emailHelpBlock"
+                      value={emailAddressEdit}
+                      onChange={(e)=>setEmailAddressEdit(e.target.value)}
+                    />
+                    {errorMessageEmailAddressEdit && <div style={{ color: 'red' }}>{errorMessageEmailAddressEdit}</div>}
+
+                    <br></br>
+                    <Form.Label htmlFor="mobile">mobileNumber</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="mobileEdit"
+                      aria-describedby="mobileHelpBlock"
+                      value={mobileNumberEdit}
+                      onChange={(e)=>setMobileNumberEdit(e.target.value)}
+                    />
+                    {errorMessageMobileNumberEdit && <div style={{ color: 'red' }}>{errorMessageMobileNumberEdit}</div>}
+
+                    
+                    <br></br>
+                    <Form.Label htmlFor="DOB">Date of Birth</Form.Label>
+                    <div className="input-group">
+                      <DatePicker
+                        id="DOBEdit"
+                        selected={dateOfBirthEdit}
+                        onChange={(date) => setDateOfBirthEdit(date)}
+                        dateFormat="yyyy-MM-dd"
+                        className="form-control"
+                        ref={datePickerRef}
+                      />
+                      <div className="input-group-append" onClick={openDatePicker}>
+                        <span className="input-group-text">
+                          <FaCalendar className='FaCalendar'/>
+                        </span>
+                      </div>
+                    </div>
+                    {errorMessageDateOfBirthEdit && <div style={{ color: 'red' }}>{errorMessageDateOfBirthEdit}</div>}
+        
+
+                    
+                    <br/>
+                    <Form.Label htmlFor="gender">Gender</Form.Label>
+                    <Form.Select
+                      id="genderEdit"
+                      aria-describedby="genderHelpBlock"
+                      value={genderEdit}
+                      onChange={(e) => setGenderEdit(e.target.value)}
+                    >
+                      <option value="">Select Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </Form.Select>
+                    {errorMessageGenderEdit && <div style={{ color: 'red' }}>{errorMessageGenderEdit}</div>}
+
+
+                    
+                    <br></br>
+                    <Form.Label htmlFor="salary">salary</Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="salaryEdit"
+                      aria-describedby="salaryHelpBlock"
+                      value={salaryEdit}
+                      onChange={(e)=>setSalaryEdit(e.target.value)}
+                    />
+                    {errorMessageSalaryEdit && <div style={{ color: 'red' }}>{errorMessageSalaryEdit}</div>}
+
+                    
+                    <br></br>
+                    <Form.Label htmlFor="department">Department</Form.Label>
+                    <Form.Select
+                      id="departmentEdit"
+                      aria-describedby="departmentHelpBlock"
+                      value={departmentIdEdit}
+                      onChange={(e) => setDepartmentIdEdit(e.target.value)}
+                    >
+                      <option value=''>Select department</option>
+                      {departmentData.map((department) => (
+                        <option key={department.departmentId} value={department.departmentId}>
+                          {department.departmentName}
+                        </option>
+                      ))}
+                    </Form.Select>
+                    {errorMessageDepartmentEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentEdit}</div>}
+                    
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseEdit}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={()=>handleUpdate()}>
+              Update
+            </Button>
+          </Modal.Footer>
+      </Modal>
+        
+        
       {/* delete modal */}
-    <Modal show={showDelete} onHide={handleCloseDelete}>
-        <Modal.Header closeButton>
-          <Modal.Title>Delete Employee</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Do you need to permernatly delete this employee ?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseDelete}>
-            Cancle
-          </Button>
-          <Button variant="danger" onClick={()=>handleDelete()}>
-            Yes
-          </Button>
-        </Modal.Footer>
+      <Modal show={showDelete} onHide={handleCloseDelete}>
+          <Modal.Header closeButton>
+            <Modal.Title>Delete Employee</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Do you need to permernatly delete this employee ?</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseDelete}>
+              Cancle
+            </Button>
+            <Button variant="danger" onClick={()=>handleDelete()}>
+              Yes
+            </Button>
+          </Modal.Footer>
       </Modal>
+        
+    </>
+    );
 
 
 
-       
-      
-      
-      
-      
-      </>
-      
-      
-      
-      
-      
-      
-      
-    
-
-   
-  );
 };
 
 export default Employee

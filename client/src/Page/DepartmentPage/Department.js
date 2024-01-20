@@ -12,8 +12,53 @@ import { BsFillExclamationTriangleFill } from 'react-icons/bs';
 
 
 function Department() {
-   const baseUrlDepartment='http://localhost:5148/api/Departments';
-   const baseUrlExceptionHandle='http://localhost:5148/api/ExceptionHandles';
+  /** server faliures handle BEGIN ->AS follows*/
+  //const for server error
+  const [serverErrorMessage,setServerErrorMessage]=useState('');
+
+   //const fro Server error alert box :- showAlertServerError
+   const [showAlertServerError, setShowAlertServerError] = useState(false);
+   const handleCloseAlertServerError = () => {
+     setShowAlertServerError(false);
+     setServerErrorMessage('');
+   }
+   const handleShowAlertServerError = () => {
+     handleCloseAdd();
+     handleCloseDelete();
+     handleCloseEdit();
+     setShowAlertServerError(true);
+   }
+   
+
+  //function for server down error 1
+  function serverResponseFaliur_1(){
+    setServerErrorMessage("Server responded with an error. Please check your input and try again.");
+    handleShowAlertServerError();
+  }
+
+  //function for server down error 2
+  function serverResponseFaliur_2(){
+    setServerErrorMessage("No response received from the server. Please try again later.");
+    handleShowAlertServerError();
+  }
+
+  //function for server down error 3
+  function serverResponseFaliur_3(){
+    setServerErrorMessage("Error setting up the request. Please try again.");
+    handleShowAlertServerError();
+  }
+
+   //function for server down error 4
+   function serverResponseFaliur_4(){
+    setServerErrorMessage("An error occurred. Please try again later.");
+    handleShowAlertServerError();
+  }
+  /**END server faliures handled */
+  
+
+  // api http urls
+  const baseUrlDepartment='http://localhost:5148/api/Departments';
+  const baseUrlExceptionHandle='http://localhost:5148/api/ExceptionHandles';
 
   //const for Add department modal
   const [showAdd, setShowAdd] = useState(false);
@@ -34,6 +79,9 @@ function Department() {
   const [showAlert, setShowAlert] = useState(false);
   const handleCloseAlert = () => setShowAlert(false);
   const handleShowAlert = () => setShowAlert(true);
+  
+ 
+
 
   //const for validation error messages in add modal
   const [errorMessageDepartmentSave,setErrorMessageDepartmentSave]= useState('');
@@ -62,8 +110,7 @@ function Department() {
 
   //get all department 
   const [departmentData,setDepartmentData]=useState([]);
-
-    const fetchDepartmentData=async ()=>{
+  const fetchDepartmentData=async ()=>{
       
       try{
       const get_url=`${baseUrlDepartment}/getAllDepartment`; //end point
@@ -72,25 +119,25 @@ function Department() {
       }catch(error) {
            console.error("Error if fetching employe data",error);
       }
-    }
+  }
 
     
-    useEffect(()=>{
+  useEffect(()=>{
         fetchDepartmentData();
-    },[])
+  },[])
 
-   //handle save new departmnet
-   const [departmentCodeSave,setDepartmentCodeSave] = useState('');
-   const [departmentNameSave,setDepartmentNameSave] = useState('');
-   //clear data for save method
-   const clearSave=()=>{
+  //handle save new departmnet
+  const [departmentCodeSave,setDepartmentCodeSave] = useState('');
+  const [departmentNameSave,setDepartmentNameSave] = useState('');
+  //clear data for save method
+  const clearSave=()=>{
     setDepartmentCodeSave('');
     setDepartmentNameSave('');  
-   }
+  }
 
 
 
-   const handleSave=async ()=>{
+  const handleSave=async ()=>{
    
     
 
@@ -155,21 +202,17 @@ function Department() {
             // Axios error, check if it's a network error
             if (error.response) {
               // The request was made, but the server responded with an error status
-              console.error('Request made, but server responded with an error:', error.response.data);
-              alert('Server responded with an error. Please check your input and try again.');
+              serverResponseFaliur_1();
             } else if (error.request) {
               // The request was made, but no response was received
-              console.error('No response received from the server:', error.request);
-              alert('No response received from the server. Please try again later.');
+              serverResponseFaliur_2();
             } else {
               // Something went wrong in setting up the request
-              console.error('Error setting up the request:', error.message);
-              alert('Error setting up the request. Please try again.');
+              serverResponseFaliur_3();
             }
           } else {
             // Not an Axios error, handle it accordingly
-            console.error('Non-Axios error occurred:', error);
-            alert('An error occurred. Please try again later.');
+          serverResponseFaliur_4();
           }
         }
 
@@ -179,43 +222,55 @@ function Department() {
       }
 
        
-   } 
+  } 
 
 
 
 
-   //get existing department details and fill the edit modal using get department by id
-   const getDepartmentById=(_departmentId)=>{
+  //get existing department details and fill the edit modal using get department by id
+  const getDepartmentById=async (_departmentId)=>{
           const getById_url =`${baseUrlDepartment}/getDepartmentById/${_departmentId}`;
 
-        try{
-              
-             axios.get(getById_url)
-             .then((result)=>{
-              //fill the input rows in edit form
-              const department = result.data;
-              setDepartmentCodeEdit(department.departmentCode);
-              setDepartmentNameEdit(department.departmentName);
-             })
-          }catch(error){
-            console.error("Error: endpoin, getDepartmentById, fail to get data",error);
+          try {
+            const response = await axios.get(getById_url);
+            // Fill the input rows in the edit form
+            const department = response.data;
+            setDepartmentCodeEdit(department.departmentCode);
+            setDepartmentNameEdit(department.departmentName);
+          } catch (error) {
+            if (axios.isAxiosError(error)) {
+              // Axios error, check if it's a network error
+              if (error.response) {
+                // The request was made, but the server responded with an error status
+                serverResponseFaliur_1();
+              } else if (error.request) {
+                // The request was made, but no response was received
+                serverResponseFaliur_2();
+              } else {
+                // Something went wrong in setting up the request
+                serverResponseFaliur_3();
+              }
+            } else {
+              // Not an Axios error, handle it accordingly
+              serverResponseFaliur_4();
+            }
           }
 
-   }
+  }
 
 
 
-   //handle edit departmnet
-   const [departmentIdNeedToUpdate,setdepartmentIdNeedToUpdate] =useState(0);
-   const [departmentCodeEdit,setDepartmentCodeEdit]=useState('');
-   const [departmentNameEdit,setDepartmentNameEdit] =useState('');
-   //clear data in edit modal
-   const clearEdit=()=>{
+  //handle edit departmnet
+  const [departmentIdNeedToUpdate,setdepartmentIdNeedToUpdate] =useState(0);
+  const [departmentCodeEdit,setDepartmentCodeEdit]=useState('');
+  const [departmentNameEdit,setDepartmentNameEdit] =useState('');
+  //clear data in edit modal
+  const clearEdit=()=>{
     setDepartmentCodeEdit('');
     setDepartmentNameEdit('');
-   }
+  }
 
-   const handleEdit=()=>{
+  const handleEdit=()=>{
    const put_url =`${baseUrlDepartment}/updateDepartment/${departmentIdNeedToUpdate}`;
 
     const updateDepartment={
@@ -293,21 +348,17 @@ function Department() {
         // Axios error, check if it's a network error
         if (error.response) {
           // The request was made, but the server responded with an error status
-          console.error('Request made, but server responded with an error:', error.response.data);
-          alert('Server responded with an error. Please check your input and try again.');
+          serverResponseFaliur_1();
         } else if (error.request) {
           // The request was made, but no response was received
-          console.error('No response received from the server:', error.request);
-          alert('No response received from the server. Please try again later.');
+          serverResponseFaliur_2();
         } else {
           // Something went wrong in setting up the request
-          console.error('Error setting up the request:', error.message);
-          alert('Error setting up the request. Please try again.');
+          serverResponseFaliur_3();
         }
       } else {
         // Not an Axios error, handle it accordingly
-        console.error('Non-Axios error occurred:', error);
-        alert('An error occurred. Please try again later.');
+        serverResponseFaliur_4();
       }
     }
   }else{
@@ -322,10 +373,9 @@ function Department() {
 
 
 
-   //exception handleing end points
-   //foreign key constrain violation
-
-   const checkForeignKeyConstraintViolations=async (_departmentId)=>{
+  //exception handleing end points
+  //foreign key constrain violation
+  const checkForeignKeyConstraintViolations=async (_departmentId)=>{
 
     const foreignKeyConstraint_url=`${baseUrlExceptionHandle}/foreignKeyConstraint/${_departmentId}`
     //here if the respose data in boolean type and if it is `true`: violated_fk_constrain  `false`: not_violated_fk_constrain
@@ -339,12 +389,12 @@ function Department() {
       console.error("Error: error in check_ForeignKey_Constraint_Violations");
     }
 
-   }
+  }
 
 
-   //handle delete department
-   const [departmentIdNeedToDelete,setDepartmentIdNeedToDelete] = useState(0);
-   const handleDelete = async () => {
+  //handle delete department
+  const [departmentIdNeedToDelete,setDepartmentIdNeedToDelete] = useState(0);
+  const handleDelete = async () => {
     const delete_url = `${baseUrlDepartment}/deleteDepartment/${departmentIdNeedToDelete}`;
   
     try {
@@ -375,20 +425,24 @@ function Department() {
             if (error.response) {
               // The request was made, but the server responded with an error status
               console.error('Request made, but server responded with an error:', error.response.data);
-              alert('Server responded with an error. Please check your input and try again.');
+              serverResponseFaliur_1();
+             
             } else if (error.request) {
               // The request was made, but no response was received
               console.error('No response received from the server:', error.request);
-              alert('No response received from the server. Please try again later.');
+              serverResponseFaliur_2();
+              
             } else {
               // Something went wrong in setting up the request
               console.error('Error setting up the request:', error.message);
-              alert('Error setting up the request. Please try again.');
+              serverResponseFaliur_3();
+              
             }
           } else {
             // Not an Axios error, handle it accordingly
-            console.error('Non-Axios error occurred:', error);
-            alert('An error occurred. Please try again later.');
+             console.error('Non-Axios error occurred:', error);
+             serverResponseFaliur_4();
+            
           }
         }
 
@@ -409,182 +463,199 @@ function Department() {
 
 
 
-  //alert for foreign key constrain
+  
  
 
-  return (
+              return (
 
-    <>
-    
-        {/* alert box for show foreing key constrain */}
-        <Modal show={showAlert} variant='danger'>
-  <Modal.Body>
-    <Alert variant='warning'>
-      <div className="d-flex align-items-center">
-        <div>
-          <Alert.Heading>Action is restricted ! &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <BsFillExclamationTriangleFill className="mr-2" /></Alert.Heading> 
-          <br></br>
-          <br></br>
-          <p>
-            Cannot delete this department because it is referenced by one or more employees.
-          </p>
-        </div>
-      </div>
-      <hr />
-      <div className="d-flex justify-content-end">
-        <Button onClick={() => handleCloseAlert()} variant="outline-dark">
-          Got it
-        </Button>
-      </div>
-    </Alert>
-  </Modal.Body>
-</Modal>
+                <>
+                
+                  {/* alert box for show foreing key constrain */}
+                  <Modal show={showAlert} variant='danger'>
+                    <Modal.Body>
+                      <Alert variant='warning'>
+                        <div className="d-flex align-items-center">
+                          <div>
+                            <Alert.Heading>Action is restricted ! &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <BsFillExclamationTriangleFill className="mr-2" /></Alert.Heading> 
+                            <br></br>
+                            <br></br>
+                            <p>
+                              Cannot delete this department because it is referenced by one or more employees.
+                            </p>
+                          </div>
+                        </div>
+                        <hr />
+                        <div className="d-flex justify-content-end">
+                          <Button onClick={() => handleCloseAlert()} variant="outline-dark">
+                            Got it
+                          </Button>
+                        </div>
+                      </Alert>
+                    </Modal.Body>
+                  </Modal>
 
-
-
-    <ToastContainer />
-    <div className='DepartmentContent'>
-      <h5 className="d-flex justify-content-center align-items-center" >Department Details</h5> 
-      <hr/>
-      <Button variant="success" onClick={()=>handleShowAdd()} className='AddDepartmentButton'>Add Department</Button>
-        <Table striped bordered hover className='DepartmentTable'>
-      <thead>
-        <tr >
-          <th className="text-center">Department Code</th>
-          <th className="text-center">Department Name</th>
-          <th className="text-center">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {
-          departmentData && departmentData.length>0?
-          departmentData.map((department)=>
-                  <tr key={department.departmentId}>
-                    <td>{department.departmentCode}</td>
-                    <td>{department.departmentName}</td>
-                    <td className="d-flex justify-content-center align-items-center">
-                         <Button variant='primary' onClick={()=>{getDepartmentById(department.departmentId); setdepartmentIdNeedToUpdate(department.departmentId); handleShowEdit()}} >Edit</Button> &nbsp;
-                         <Button variant='danger' onClick={()=>{setDepartmentIdNeedToDelete(department.departmentId); handleShowDelete();}}>Delete</Button>
-                    </td>
-                </tr>
-          ):""
-        }
-      </tbody>
-    </Table>
-    { departmentData && departmentData.length === 0 ?
-           <Alert variant="danger"  dismissible>
-           <Alert.Heading>Oh snap! You got an error! Data is not Loaded</Alert.Heading>
-           <p>
-             No data or Server is not up & runnig at this moment. 
-            </p>
-            <Button variant="light" onClick={()=>fetchDepartmentData()}>Fetch</Button>
-         </Alert>:
-          ""
-       }
-  </div>
+                  {/* alert box for show server error eg:- server down*/}
+                  <Modal show={showAlertServerError} variant='danger'>
+                    <Modal.Body>
+                      <Alert variant='warning'>
+                        <div className="d-flex align-items-center">
+                          <div>
+                            <Alert.Heading>Action is restricted ! <br></br>Server may be down&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <BsFillExclamationTriangleFill className="mr-2" /></Alert.Heading> 
+                            <br></br>
+                            <br></br>
+                            <p>
+                              {serverErrorMessage}
+                            </p>
+                          </div>
+                        </div>
+                        <hr />
+                        <div className="d-flex justify-content-end">
+                          <Button onClick={() => handleCloseAlertServerError()} variant="outline-dark">
+                            Got it
+                          </Button>
+                        </div>
+                      </Alert>
+                    </Modal.Body>
+                  </Modal>
 
 
-
-
-  {/* add department modal */}
-      <Modal show={showAdd} onHide={handleCloseAdd}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add Deparment</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-            <div>{errorMessageDepartmentSave && <div style={{ color: 'red' }}>{errorMessageDepartmentSave}</div>}</div>
-            <Form.Label htmlFor="departmentCode">Department Code</Form.Label>
-            <Form.Control
-              type="text"
-              id="depID"
-              value={departmentCodeSave}
-              onChange={(e)=>setDepartmentCodeSave(e.target.value)}
-            />
-            {errorMessageDepartmentCodeSave && <div style={{ color: 'red' }}>{errorMessageDepartmentCodeSave}</div>}
-            <br></br>
-            <Form.Label htmlFor="departmentName">Deparment Name</Form.Label>
-            <Form.Control
-              type="text"
-              id="depName"
-              value={departmentNameSave}
-              onChange={(e)=>setDepartmentNameSave(e.target.value)}
-            />
-            {errorMessageDepartmentNameSave && <div style={{ color: 'red' }}>{errorMessageDepartmentNameSave}</div>}
-
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseAdd}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={()=>{handleSave()}}>
-            Save
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    
-
-  {/* update department modal */}
-      <Modal show={showEdit} onHide={handleCloseEdit}>
-        <Modal.Header closeButton>
-          <Modal.Title>Update Deparment</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-        <div>{errorMessageDepartmentEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentEdit}</div>}</div>
-            <Form.Label htmlFor="departmentCode">Department Code</Form.Label>
-            <Form.Control
-              type="text"
-              id="depID"
-              value={departmentCodeEdit}
-              onChange={(e)=>setDepartmentCodeEdit(e.target.value)}
-            />
-            {errorMessageDepartmentCodeEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentCodeEdit}</div>}
-            <br></br>
-            <Form.Label htmlFor="departmentName">Deparment Name</Form.Label>
-            <Form.Control
-              type="text"
-              id="depName"
-              value={departmentNameEdit}
-              onChange={(e)=>setDepartmentNameEdit(e.target.value)}
-            />
-            {errorMessageDepartmentNameEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentNameEdit}</div>}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={()=>{handleCloseEdit(); setdepartmentIdNeedToUpdate(0);/*reset the department id need to update*/}}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={()=>{handleEdit()}}>
-            Update
-          </Button>
-        </Modal.Footer>
-      </Modal>
+                  {/* tost message */}
+                  <ToastContainer />
+                  {/* table of cantent */}
+                  <div className='DepartmentContent'>
+                    <h5 className="d-flex justify-content-center align-items-center" >Department Details</h5> 
+                    <hr/>
+                    <Button variant="success" onClick={()=>handleShowAdd()} className='AddDepartmentButton'>Add Department</Button>
+                      <Table striped bordered hover className='DepartmentTable'>
+                    <thead>
+                      <tr >
+                        <th className="text-center">Department Code</th>
+                        <th className="text-center">Department Name</th>
+                        <th className="text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        departmentData && departmentData.length>0?
+                        departmentData.map((department)=>
+                                <tr key={department.departmentId}>
+                                  <td>{department.departmentCode}</td>
+                                  <td>{department.departmentName}</td>
+                                  <td className="d-flex justify-content-center align-items-center">
+                                      <Button variant='primary' onClick={()=>{getDepartmentById(department.departmentId); setdepartmentIdNeedToUpdate(department.departmentId); handleShowEdit()}} >Edit</Button> &nbsp;
+                                      <Button variant='danger' onClick={()=>{setDepartmentIdNeedToDelete(department.departmentId); handleShowDelete();}}>Delete</Button>
+                                  </td>
+                              </tr>
+                        ):""
+                      }
+                    </tbody>
+                  </Table>
+                  { departmentData && departmentData.length === 0 ?
+                        <Alert variant="danger"  dismissible>
+                        <Alert.Heading>Oh snap! You got an error! Data is not Loaded</Alert.Heading>
+                        <p>
+                          No data or Server is not up & runnig at this moment. 
+                          </p>
+                          <Button variant="light" onClick={()=>fetchDepartmentData()}>Fetch</Button>
+                      </Alert>:
+                        ""
+                    }
+                  </div>
 
 
 
-  {/* delete department modal */}
-      <Modal show={showDelete} onHide={handleCloseDelete}>
-        <Modal.Header closeButton>
-          <Modal.Title>Delete Department</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Do you need to permernatly delete this Department information ?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={()=>{handleCloseDelete(); setDepartmentIdNeedToDelete(0);/**reset department id need to delete when close the modal*/}}>
-            Cancle
-          </Button>
-          <Button variant="danger" onClick={()=>{handleDelete()}}>
-            Yes
-          </Button>
-        </Modal.Footer>
-      </Modal>
+                  {/* add department modal */}
+                  <Modal show={showAdd} onHide={handleCloseAdd}>
+                          <Modal.Header closeButton>
+                            <Modal.Title>Add Deparment</Modal.Title>
+                          </Modal.Header>
+                          <Modal.Body>
+                              <div>{errorMessageDepartmentSave && <div style={{ color: 'red' }}>{errorMessageDepartmentSave}</div>}</div>
+                              <Form.Label htmlFor="departmentCode">Department Code</Form.Label>
+                              <Form.Control
+                                type="text"
+                                id="depID"
+                                value={departmentCodeSave}
+                                onChange={(e)=>setDepartmentCodeSave(e.target.value)}
+                              />
+                              {errorMessageDepartmentCodeSave && <div style={{ color: 'red' }}>{errorMessageDepartmentCodeSave}</div>}
+                              <br></br>
+                              <Form.Label htmlFor="departmentName">Deparment Name</Form.Label>
+                              <Form.Control
+                                type="text"
+                                id="depName"
+                                value={departmentNameSave}
+                                onChange={(e)=>setDepartmentNameSave(e.target.value)}
+                              />
+                              {errorMessageDepartmentNameSave && <div style={{ color: 'red' }}>{errorMessageDepartmentNameSave}</div>}
+
+                          </Modal.Body>
+                          <Modal.Footer>
+                            <Button variant="secondary" onClick={handleCloseAdd}>
+                              Close
+                            </Button>
+                            <Button variant="primary" onClick={()=>{handleSave()}}>
+                              Save
+                            </Button>
+                          </Modal.Footer>
+                  </Modal>
+                
+
+                  {/* update department modal */}
+                  <Modal show={showEdit} onHide={handleCloseEdit}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Update Deparment</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <div>{errorMessageDepartmentEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentEdit}</div>}</div>
+                        <Form.Label htmlFor="departmentCode">Department Code</Form.Label>
+                        <Form.Control
+                          type="text"
+                          id="depID"
+                          value={departmentCodeEdit}
+                          onChange={(e)=>setDepartmentCodeEdit(e.target.value)}
+                        />
+                        {errorMessageDepartmentCodeEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentCodeEdit}</div>}
+                        <br></br>
+                        <Form.Label htmlFor="departmentName">Deparment Name</Form.Label>
+                        <Form.Control
+                          type="text"
+                          id="depName"
+                          value={departmentNameEdit}
+                          onChange={(e)=>setDepartmentNameEdit(e.target.value)}
+                        />
+                        {errorMessageDepartmentNameEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentNameEdit}</div>}
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={()=>{handleCloseEdit(); setdepartmentIdNeedToUpdate(0);/*reset the department id need to update*/}}>
+                        Close
+                      </Button>
+                      <Button variant="primary" onClick={()=>{handleEdit()}}>
+                        Update
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
 
 
-  
+                  {/* delete department modal */}
+                  <Modal show={showDelete} onHide={handleCloseDelete}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Delete Department</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Do you need to permernatly delete this Department information ?</Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={()=>{handleCloseDelete(); setDepartmentIdNeedToDelete(0);/**reset department id need to delete when close the modal*/}}>
+                        Cancle
+                      </Button>
+                      <Button variant="danger" onClick={()=>{handleDelete()}}>
+                        Yes
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
 
+              </>
 
-
-  </>
-
-       
-  
+      
   )
 }
 
