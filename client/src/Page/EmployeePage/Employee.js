@@ -717,7 +717,7 @@ function Employee() {
           setErrorMessageSalaryEdit('')
           return true;
         }
-        setErrorMessageSalaryEdit('Enter valid number (min 500.00 Rs');
+        setErrorMessageSalaryEdit('Enter valid number (min 500.00 Rs)');
         return false;
       }
 
