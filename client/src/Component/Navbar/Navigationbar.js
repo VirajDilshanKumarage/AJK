@@ -15,7 +15,7 @@ function Navigationbar() {
 
     <Navbar bg="dark" data-bs-theme="dark"  >
       <img src={Logo} className='Logo' />
-        <Container className='Container'>
+        <Container className='container'>
           {/* <Navbar.Brand>John Keells</Navbar.Brand> */}
           <Nav className="me-auto">
             <Nav.Link href="/" className="underline-on-hover">Home</Nav.Link>
