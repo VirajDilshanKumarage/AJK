@@ -2,9 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import './Loader.css'; // Import your CSS file
+import '../../Page/EmployeePage/Employee'
+import Employee from '../../Page/EmployeePage/Employee';
 
 const Loader = () => {
   const [loading, setLoading] = useState(true);
+  
 
   useEffect(() => {
     // Simulate an asynchronous operation (e.g., fetching data)

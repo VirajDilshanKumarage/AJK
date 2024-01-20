@@ -21,6 +21,13 @@ import Alert from 'react-bootstrap/Alert';
 import Loader from '../../Component/Loader/Loader';
 
 function Employee() {
+
+
+  //const for set error message when the serve is down
+  const [serverDownError,setserverDownError]=useState('');
+   
+
+
   /**
    * This function written to handle all the mappings and data validation for for employee model
    */
@@ -31,13 +38,32 @@ function Employee() {
 
     const fetchDepartmentData=async ()=>{
       
-      try{
-      const get_url=`${baseUrlDepartment}/getAllDepartment`; //end point
+      try {
+      const get_url = `${baseUrlDepartment}/getAllDepartment`;
       const response = await axios.get(get_url);
       setDepartmentData(response.data);
-      }catch(error) {
-           console.error("Error if fetching employe data",error);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // Axios error, check if it's a network error
+        if (error.response) {
+          // The request was made, but the server responded with an error status
+          console.error('Request made, but server responded with an error:', error.response.data);
+          alert('Server responded with an error. Please try again.');
+        } else if (error.request) {
+          // The request was made, but no response was received
+          console.error('No response received from the server:', error.request);
+          alert('No response received from the server. Please try again later.');
+        } else {
+          // Something went wrong in setting up the request
+          console.error('Error setting up the request:', error.message);
+          alert('Error setting up the request. Please try again.');
+        }
+      } else {
+        // Not an Axios error, handle it accordingly
+        console.error('Non-Axios error occurred:', error);
+        alert('An error occurred. Please try again later.');
       }
+    }
     }
 
     useEffect(()=>{
@@ -47,7 +73,7 @@ function Employee() {
 
 
 
-
+  
 
   //base usrl for employee model
   const baseUrlEmployee = 'http://localhost:5148/api/Employees';
@@ -209,7 +235,7 @@ function Employee() {
  
 
   //adding
-  const handleSave = ()=>{
+  const handleSave = async ()=>{
       
          const post_url =`${baseUrlEmployee}/saveNewEmployee`; // end point
          const data = {
@@ -244,6 +270,7 @@ function Employee() {
           }
 
           function nicValidation(data){
+            fetchEmployeeData();
 
             for (const employee of employeeData) {
               if (employee.nicNumber === data.nicNumber) {
@@ -350,6 +377,7 @@ function Employee() {
 
 
           function departmentValidation(data){
+                 fetchDepartmentData();
                  console.log(departmentData);
                  if(departmentData && departmentData.length>0){
 
@@ -376,18 +404,35 @@ function Employee() {
            if(isDataFilled(data) && nicValidation(data) && firstNameValidation(data) && lastNameValidation(data) && emailAddressValidation(data) 
               && mobileNumberValidation(data) && dateOfBirthValidation(data) && genderValidation(data) && salaryValidation(data) && departmentValidation(data)){
 
-                    try{
-                      axios.post(post_url,data)
-                      .then((result)=>{
-                        fetchEmployeeData();
-                        handleCloseAdd();
-                        clearSave();
-                        toast.success("new employee addedd successfully");
-                    })
-                }catch(error){
-                    console.error("Error in save data",error);
+                try {
+                  const result = await axios.post(post_url, data);
+                  fetchEmployeeData();
+                  handleCloseAdd();
+                  clearSave();
+                  toast.success('New employee added successfully');
+                } catch (error) {
+                  if (axios.isAxiosError(error)) {
+                    // Axios error, check if it's a network error
+                    if (error.response) {
+                      // The request was made, but the server responded with an error status
+                      console.error('Request made, but server responded with an error:', error.response.data);
+                      alert('Server responded with an error. Please check your input and try again.');
 
+                    } else if (error.request) {
+                      // The request was made, but no response was received
+                      console.error('No response received from the server:', error.request);
+                      alert('No response received from the server. Please try again later.');
+                    } else {
+                      // Something went wrong in setting up the request
+                      console.error('Error setting up the request:', error.message);
+                      alert('Error setting up the request. Please try again.');
+                    }
+                  } else {
+                    // Not an Axios error, handle it accordingly
+                    console.error('Non-Axios error occurred:', error);
+                    alert('An error occurred. Please try again later.');
                   }
+                }
               
            }else{
                
@@ -402,15 +447,15 @@ function Employee() {
 
 
  //get employee by id
-  const [NameOfEmployee, setNameOfEmployee] =useState(''); //set the name of the employe to use in delete toast to show employee's name
-  const getEmployeeById =(_employeeId)=>{
+  const [NameOfEmployee, setNameOfEmployee] =useState(''); //set the fullname to get full name of an employee
+  const getEmployeeById =async (_employeeId)=>{
     const getById_url =`${baseUrlEmployee}/getEmployeeById/${_employeeId}`;
       try{
-      axios.get(getById_url)
-      .then((result) => {
-
-        console.log(result.data);// just see data form console
+        const result= await axios.get(getById_url)
         const employee = result.data;
+
+        if(employee.employeeId!=null){
+        console.log(result.data);// just see data form console
         setNicNumberEdit(employee.nicNumber);
         setFirstNameEdit(employee.firstName);
         setLastNameEdit(employee.lastName);
@@ -420,13 +465,31 @@ function Employee() {
         setGenderEdit(employee.gender); // Fix: Use setGender instead of setDateOfBirth
         setSalaryEdit(employee.salary);
         setDepartmentIdEdit(employee.departmentName); // Fix: Use setDepartment instead of setEmailAddress
-
-
         setNameOfEmployee(employee.firstName+" "+employee.lastName);
+        }
         
-      })
-    }catch(error) {
-        console.error("Error in get employee by id",error)
+      
+    }catch (error) {
+      if (axios.isAxiosError(error)) {
+        // Axios error, check if it's a network error
+        if (error.response) {
+          // The request was made, but the server responded with an error status
+          console.error('Request made, but server responded with an error:', error.response.data);
+          alert('Server responded with an error. Please check your input and try again.');
+        } else if (error.request) {
+          // The request was made, but no response was received
+          console.error('No response received from the server:', error.request);
+          alert('No response received from the server. Please try again later.');
+        } else {
+          // Something went wrong in setting up the request
+          console.error('Error setting up the request:', error.message);
+          alert('Error setting up the request. Please try again.');
+        }
+      } else {
+        // Not an Axios error, handle it accordingly
+        console.error('Non-Axios error occurred:', error);
+        alert('An error occurred. Please try again later.');
+      }
     }
   }
 
@@ -448,7 +511,7 @@ function Employee() {
     
 
        
-      const UpdateEmployee =(_employeeId)=>{
+      const UpdateEmployee =async (_employeeId)=>{
       const put_url = `${baseUrlEmployee}/updateEmployee/${_employeeId}`;
   
       const updatedData={
@@ -614,16 +677,33 @@ function Employee() {
       if(isDataFilled(updatedData) && nicValidationEdit(updatedData) && firstNameValidation(updatedData) && lastNameValidation(updatedData) && emailAddressValidation(updatedData) 
       && mobileNumberValidation(updatedData) && dateOfBirthValidation(updatedData) && genderValidation(updatedData) && salaryValidation(updatedData) && departmentValidation(updatedData)){
 
-          try{
-            axios.put(put_url,updatedData)
-            .then((result)=>{
-                fetchEmployeeData();
-                clearEdit();
-                toast.success("update successfully");
-            })
-          }catch(error){
-            console.error("Error in update (end point)",error);
+        try {
+          const result = await axios.put(put_url, updatedData);
+          fetchEmployeeData();
+          clearEdit();
+          toast.success('Update successful');
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            // Axios error, check if it's a network error
+            if (error.response) {
+              // The request was made, but the server responded with an error status
+              console.error('Request made, but server responded with an error:', error.response.data);
+              alert('Server responded with an error. Please check your input and try again.');
+            } else if (error.request) {
+              // The request was made, but no response was received
+              console.error('No response received from the server:', error.request);
+              alert('No response received from the server. Please try again later.');
+            } else {
+              // Something went wrong in setting up the request
+              console.error('Error setting up the request:', error.message);
+              alert('Error setting up the request. Please try again.');
+            }
+          } else {
+            // Not an Axios error, handle it accordingly
+            console.error('Non-Axios error occurred:', error);
+            alert('An error occurred. Please try again later.');
           }
+        }
 
           
           handleCloseEdit();
@@ -649,25 +729,45 @@ function Employee() {
   // define a const for set the employee id that I need to delete
   const [empIDToDelete,setempIDToDelete] =useState(0);
   //deleting 
-  const handleDelete = ()=>{
-      
-      
+  const handleDelete = async ()=>{
+    
+     
+       
       const delete_url =`${baseUrlEmployee}/deleteEmployee/${empIDToDelete}`; 
+      
 
-      try{
-      axios.delete(delete_url)
-      .then((result)=>{
-          console.log(result);
-          fetchEmployeeData();
-          setempIDToDelete(0); // reset the employeeIDToDelete
-          handleCloseDelete();
-          toast.warning(NameOfEmployee.concat("'s information is permernatly deleted"));
-          setNameOfEmployee(null);
-          console.log(NameOfEmployee);
-      })
-    }catch(error){
-      console.error("Error in delete (end point)",error);
-    }
+      try {
+        const result = await axios.delete(delete_url);
+        
+        console.log(result);
+        fetchEmployeeData();
+        setempIDToDelete(0); // reset the employeeIDToDelete
+        handleCloseDelete();
+        toast.warning('Employee is permanently deleted');
+        setNameOfEmployee(null);
+        
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          // Axios error, check if it's a network error
+          if (error.response) {
+            // The request was made, but the server responded with an error status
+            console.error('Request made, but server responded with an error:', error.response.data);
+            alert('Server responded with an error. Please try again.');
+          } else if (error.request) {
+            // The request was made, but no response was received
+            console.error('No response received from the server:', error.request);
+            alert('No response received from the server. Please try again later.');
+          } else {
+            // Something went wrong in setting up the request
+            console.error('Error setting up the request:', error.message);
+            alert('Error setting up the request. Please try again.');
+          }
+        } else {
+          // Not an Axios error, handle it accordingly
+          console.error('Non-Axios error occurred:', error);
+          alert('An error occurred. Please try again later.');
+        }
+      }
 
       
   }
@@ -679,11 +779,12 @@ function Employee() {
   return (
     <>
     <ToastContainer />
+    <div className='EmployeeBackground'>
     <div className='EmployeeContent'>
       <h5 className="d-flex justify-content-center align-items-center">Employee Details</h5>
       <hr/>
-      <Button variant="success" onClick={()=>handleShowAdd()}>Add Employee</Button>
-      <Table striped bordered hover className='EmployeeTable'>
+      <Button variant="success" onClick={()=>handleShowAdd()} className='AddEmployeeButton'>Add Employee</Button>
+      <Table striped bordered hover className='EmployeeTable' >
         <thead>
           <tr>
             <th className="text-center">NIC</th>
@@ -715,7 +816,7 @@ function Employee() {
                 <td>{employee.departmentName}</td>
                 <td colSpan={2} className="d-flex justify-content-center align-items-center">
                   <Button variant="primary" onClick={() => handleEdit(employee.employeeId)}>Edit</Button> &nbsp;
-                  <Button variant="danger" onClick={() => {getEmployeeById(employee.employeeId); setempIDToDelete(employee.employeeId); handleShowDelete();}}>Delete</Button>
+                  <Button variant="danger" onClick={() => { setempIDToDelete(employee.employeeId); handleShowDelete();}}>Delete</Button>
                 </td>
               </tr>
             ))
@@ -728,15 +829,16 @@ function Employee() {
  
       { employeeData && employeeData.length === 0 ?
            <Alert variant="danger"  dismissible>
-           <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+           <Alert.Heading>Oh snap! You got an error! Data is not Loaded</Alert.Heading>
            <p>
-             No data or Serve is not up & runnig at this moment. 
+             No data or Servee is not up & runnig at this moment. 
             </p>
             <Button variant="light" onClick={()=>fetchEmployeeData()}>Fetch</Button>
          </Alert>:
           ""
        }
       
+    </div>
     </div>
 
 

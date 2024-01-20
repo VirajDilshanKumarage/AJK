@@ -90,7 +90,7 @@ function Department() {
 
 
 
-   const handleSave=()=>{
+   const handleSave=async ()=>{
    
     
 
@@ -143,18 +143,34 @@ function Department() {
 
       if(isFilled(newDepartment) && validationDepartmentCode(newDepartment) && validationDepartmentName(newDepartment)){
 
-        try{
-          axios.post(post_url,newDepartment)
-          .then((result)=>{
-            handleCloseAdd();
-            fetchDepartmentData();
-            clearSave();
-            clearErrorMessageSave();
-            toast.success('New Department Added Successfully');
-
-          })
-        }catch(error){
-          console.log("Error: endpoint, post, newDepartment, Department.js",error);
+        try {
+          const result = await axios.post(post_url, newDepartment);
+          handleCloseAdd();
+          fetchDepartmentData();
+          clearSave();
+          clearErrorMessageSave();
+          toast.success('New Department Added Successfully');
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            // Axios error, check if it's a network error
+            if (error.response) {
+              // The request was made, but the server responded with an error status
+              console.error('Request made, but server responded with an error:', error.response.data);
+              alert('Server responded with an error. Please check your input and try again.');
+            } else if (error.request) {
+              // The request was made, but no response was received
+              console.error('No response received from the server:', error.request);
+              alert('No response received from the server. Please try again later.');
+            } else {
+              // Something went wrong in setting up the request
+              console.error('Error setting up the request:', error.message);
+              alert('Error setting up the request. Please try again.');
+            }
+          } else {
+            // Not an Axios error, handle it accordingly
+            console.error('Non-Axios error occurred:', error);
+            alert('An error occurred. Please try again later.');
+          }
         }
 
       }else{
@@ -273,8 +289,26 @@ function Department() {
       }))
 
     }catch(error){
-       console.error('Error: endpoit, put, hendleEdit, Department',error);
-       toast.error("anable to update");
+      if (axios.isAxiosError(error)) {
+        // Axios error, check if it's a network error
+        if (error.response) {
+          // The request was made, but the server responded with an error status
+          console.error('Request made, but server responded with an error:', error.response.data);
+          alert('Server responded with an error. Please check your input and try again.');
+        } else if (error.request) {
+          // The request was made, but no response was received
+          console.error('No response received from the server:', error.request);
+          alert('No response received from the server. Please try again later.');
+        } else {
+          // Something went wrong in setting up the request
+          console.error('Error setting up the request:', error.message);
+          alert('Error setting up the request. Please try again.');
+        }
+      } else {
+        // Not an Axios error, handle it accordingly
+        console.error('Non-Axios error occurred:', error);
+        alert('An error occurred. Please try again later.');
+      }
     }
   }else{
 
@@ -336,9 +370,28 @@ function Department() {
           fetchDepartmentData();
           toast.warning("Department " + _department_name + " deleted permanentl ( Department code: "+_department_code+" )");
         } catch (error) {
-          console.error("Error: failed to delete department, endpoint, delete department, handleDelete, department module", error);
-          toast.error("Failed to delete department");
+          if (axios.isAxiosError(error)) {
+            // Axios error, check if it's a network error
+            if (error.response) {
+              // The request was made, but the server responded with an error status
+              console.error('Request made, but server responded with an error:', error.response.data);
+              alert('Server responded with an error. Please check your input and try again.');
+            } else if (error.request) {
+              // The request was made, but no response was received
+              console.error('No response received from the server:', error.request);
+              alert('No response received from the server. Please try again later.');
+            } else {
+              // Something went wrong in setting up the request
+              console.error('Error setting up the request:', error.message);
+              alert('Error setting up the request. Please try again.');
+            }
+          } else {
+            // Not an Axios error, handle it accordingly
+            console.error('Non-Axios error occurred:', error);
+            alert('An error occurred. Please try again later.');
+          }
         }
+
       } else {
         // There is a foreign key constraint violation, handle accordingly
         handleCloseDelete();
@@ -393,7 +446,7 @@ function Department() {
     <div className='DepartmentContent'>
       <h5 className="d-flex justify-content-center align-items-center" >Department Details</h5> 
       <hr/>
-      <Button variant="success" onClick={()=>handleShowAdd()}>Add Department</Button>
+      <Button variant="success" onClick={()=>handleShowAdd()} className='AddDepartmentButton'>Add Department</Button>
         <Table striped bordered hover className='DepartmentTable'>
       <thead>
         <tr >
@@ -420,9 +473,9 @@ function Department() {
     </Table>
     { departmentData && departmentData.length === 0 ?
            <Alert variant="danger"  dismissible>
-           <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+           <Alert.Heading>Oh snap! You got an error! Data is not Loaded</Alert.Heading>
            <p>
-             No data or Serve is not up & runnig at this moment. 
+             No data or Server is not up & runnig at this moment. 
             </p>
             <Button variant="light" onClick={()=>fetchDepartmentData()}>Fetch</Button>
          </Alert>:

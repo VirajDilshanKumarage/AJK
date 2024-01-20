@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "muIe4zpX9Tpq3QdGOMhUZqGX8+O1xnKQCuneNw4Fu5MVk/IjVYwL8Mu+ckLtDdmqrUJYs7kIOqrtmgzmFj+tpg==",
+  "dgSpecHash": "EheHA+H+QwNgfc5vyAnRnZJ9msDTI+6m+6P9XohPEyJO83bdGetu+ZbBbk1boLdczwuS6jTcaEXY/5I7FgjBCg==",
   "success": true,
-  "projectFilePath": "C:\\Github\\AJK\\Server\\Server.csproj",
+  "projectFilePath": "C:\\Github\\AJK\\server\\Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\viraj\\.nuget\\packages\\microsoft.aspnetcore.cors\\2.2.0\\microsoft.aspnetcore.cors.2.2.0.nupkg.sha512",
     "C:\\Users\\viraj\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.2.0\\microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512",
