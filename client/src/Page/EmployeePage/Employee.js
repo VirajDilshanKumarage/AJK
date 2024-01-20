@@ -23,6 +23,11 @@ import { BsFillExclamationTriangleFill } from 'react-icons/bs';
 import { BsFillPersonPlusFill } from 'react-icons/bs';
 import { BsPencil } from 'react-icons/bs';
 import { BsTrash } from 'react-icons/bs';
+import { AiFillEdit } from 'react-icons/ai';
+import { AiFillSave } from 'react-icons/ai';
+import { AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineCheck } from 'react-icons/ai';
+
 
 function Employee() {
 
@@ -118,7 +123,10 @@ function Employee() {
   //add modal
   const [showAdd, setShowAdd] = useState(false);
   const handleCloseAdd = () => setShowAdd(false);
-  const handleShowAdd = () => setShowAdd(true);
+  const handleShowAdd = () => {
+    fetchDepartmentData();//refreshig loaded department details because those details are use in add modal;
+    setShowAdd(true);
+  }
 
   //edite modal
   const [showEdit, setShowEdit] = useState(false);
@@ -127,7 +135,11 @@ function Employee() {
 
   //delete modal
   const [showDelete, setShowDelete] = useState(false);
-  const handleCloseDelete = () => setShowDelete(false);
+  const handleCloseDelete = () => {
+    setDeleteConfirmation('');
+    setErrorMessageDeleteConfirmation('');
+    setShowDelete(false)
+  };
   const handleShowDelete = () => setShowDelete(true);
 
  
@@ -152,6 +164,11 @@ function Employee() {
   const [errorMessageGender,setErrorMessageGender] = useState('');
   const [errorMessageSalary,setErrorMessageSalary] = useState('');
   const [errorMessageDepartment,setErrorMessageDepartment] = useState('');
+
+  //validation cost in delete modal to check the deletion is confirm or not
+  const [errorMessageDeleteConfirmation,setErrorMessageDeleteConfirmation] =useState('');
+
+
   //clear error messages which in save modal
   const clearErrorMessageSave=()=>{
     setErrorMessage('');
@@ -329,7 +346,7 @@ function Employee() {
                setErrorMessageFirstName('');
                return true
             }
-            setErrorMessageFirstName("Enter valid name for first name");
+            setErrorMessageFirstName("Enter valid mane as first name. can't use numbers");
             return false
           }
           
@@ -339,7 +356,7 @@ function Employee() {
                setErrorMessageLastName('');
                return true
             }
-            setErrorMessageLastName("Enter valid name for last name");
+            setErrorMessageLastName("Enter valid name as last name. can't use numbers");
             return false
           }
           
@@ -603,7 +620,7 @@ function Employee() {
            setErrorMessageFirstNameEdit('');
            return true
         }
-        setErrorMessageFirstNameEdit("Enter valid name for first name, cant use numbers");
+        setErrorMessageFirstNameEdit("Enter valid name as first name, can't use numbers");
         return false
       }
 
@@ -612,7 +629,7 @@ function Employee() {
            setErrorMessageLastNameEdit('');
            return true
         }
-        setErrorMessageLastNameEdit("Enter valid name for last name, can't use numbers");
+        setErrorMessageLastNameEdit("Enter valid name as last name, can't use numbers");
         return false
       }
 
@@ -747,42 +764,51 @@ function Employee() {
 
   // define a const for set the employee id that I need to delete
   const [empIDToDelete,setempIDToDelete] =useState(0);
+  const [deleteConfirmation,setDeleteConfirmation] =useState('');//set delete conformation string;
   //deleting 
   const handleDelete = async ()=>{
     
-     
+      
        
       const delete_url =`${baseUrlEmployee}/deleteEmployee/${empIDToDelete}`; 
       
+      if(deleteConfirmation.toLowerCase()=='confirm'){
+        setErrorMessageDeleteConfirmation('');
+        setDeleteConfirmation('');
 
-      try {
-        const result = await axios.delete(delete_url);
-        
-        console.log(result);
-        fetchEmployeeData();
-        setempIDToDelete(0); // reset the employeeIDToDelete
-        handleCloseDelete();
-        toast.warning('Employee is permanently deleted');
-        setNameOfEmployee(null);
-        
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          // Axios error, check if it's a network error
-          if (error.response) {
-            // The request was made, but the server responded with an error status
-            serverResponseFaliur_1();
-          } else if (error.request) {
-            // The request was made, but no response was received
-            serverResponseFaliur_2();
+        try {
+          const result = await axios.delete(delete_url);
+          
+          console.log(result);
+          fetchEmployeeData();
+          setempIDToDelete(0); // reset the employeeIDToDelete
+          handleCloseDelete();
+          toast.warning('Employee is permanently deleted');
+          setNameOfEmployee(null);
+          
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            // Axios error, check if it's a network error
+            if (error.response) {
+              // The request was made, but the server responded with an error status
+              serverResponseFaliur_1();
+            } else if (error.request) {
+              // The request was made, but no response was received
+              serverResponseFaliur_2();
+            } else {
+              // Something went wrong in setting up the request
+              serverResponseFaliur_3();
+            }
           } else {
-            // Something went wrong in setting up the request
-            serverResponseFaliur_3();
+            // Not an Axios error, handle it accordingly
+            serverResponseFaliur_4();
           }
-        } else {
-          // Not an Axios error, handle it accordingly
-          serverResponseFaliur_4();
         }
-      }
+    }else{
+        setErrorMessageDeleteConfirmation("This action is Not Confirm, type as 'confirm' to delete this employee");
+        setDeleteConfirmation('');
+        
+    }
 
       
   }
@@ -888,62 +914,67 @@ function Employee() {
             <Modal.Title>Add Employee</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-                  <div>{errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}</div>
-                    <Form.Label htmlFor="nic">nic</Form.Label>
+                  <div>{errorMessage && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessage}</div>}</div>
+                    <Form.Label htmlFor="nic">NIC number</Form.Label>
                     <Form.Control
                       type="text"
                       id="nicSave"
                       aria-describedby="nicHelpBlock"
                       value={nicNumberSave}
+                      placeholder='eg: 208018201577 or 974567788v'
                       onChange={(e)=>setNicNumberSave(e.target.value)}
                     />
-                    {errorMessageNIC && <div style={{ color: 'red' }}>{errorMessageNIC}</div>}
+                    {errorMessageNIC && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageNIC}</div>}
                     <br></br>
 
-                    <Form.Label htmlFor="firstname">firstName</Form.Label>
+                    <Form.Label htmlFor="firstname">First name</Form.Label>
                     <Form.Control
                       type="text"
                       id="firstNameSave"
                       aria-describedby="firstNameHelpBlock"
                       value={firstNameSave}
+                      placeholder='eg: John'
                       onChange={(e)=>setFirstNameSave(e.target.value)}
                     />
-                    {errorMessageFirstName && <div style={{ color: 'red' }}>{errorMessageFirstName}</div>}
+                    {errorMessageFirstName && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageFirstName}</div>}
 
                     <br></br>
 
-                    <Form.Label htmlFor="lastName">lastName</Form.Label>
+                    <Form.Label htmlFor="lastName">Last name</Form.Label>
                     <Form.Control
                       type="text"
                       id="lastNameSave"
                       aria-describedby="lastNameHelpBlock"
                       value={lastNameSave}
+                      placeholder='eg: Deo'
                       onChange={(e)=>setLastNameSave(e.target.value)}
                     />
-                    {errorMessageLastName && <div style={{ color: 'red' }}>{errorMessageLastName}</div>}
+                    {errorMessageLastName && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageLastName}</div>}
 
 
                     <br></br>
-                    <Form.Label htmlFor="email">emailAddress</Form.Label>
+                    <Form.Label htmlFor="email">E-mail</Form.Label>
                     <Form.Control
                       type="text"
                       id="emailSave"
                       aria-describedby="emailHelpBlock"
                       value={emailAddressSave}
+                      placeholder='eg: example@gmail.com'
                       onChange={(e)=>setEmailAddressSave(e.target.value)}
                     />
-                    {errorMessageEmailAddress && <div style={{ color: 'red' }}>{errorMessageEmailAddress}</div>}
+                    {errorMessageEmailAddress && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageEmailAddress}</div>}
 
                     <br></br>
-                    <Form.Label htmlFor="mobile">mobileNumber</Form.Label>
+                    <Form.Label htmlFor="mobile">Mobile</Form.Label>
                     <Form.Control
                       type="text"
                       id="mobileSave"
                       aria-describedby="mobileHelpBlock"
                       value={mobileNumberSave}
+                      placeholder='eg: 0712345678'
                       onChange={(e)=>setMobileNumberSave(e.target.value)}
                     />
-                    {errorMessageMobileNumber && <div style={{ color: 'red' }}>{errorMessageMobileNumber}</div>}
+                    {errorMessageMobileNumber && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageMobileNumber}</div>}
 
                     
                     <br></br>
@@ -955,6 +986,7 @@ function Employee() {
                         onChange={(date) => setDateOfBirthSave(date)}
                         dateFormat="yyyy-MM-dd"
                         className="form-control"
+                        placeholderText='eg: 1999-03-01'
                         ref={datePickerRef}
                       />
                       <div className="input-group-append" onClick={openDatePicker}>
@@ -963,7 +995,7 @@ function Employee() {
                         </span>
                       </div>
                     </div>
-                    {errorMessageDateOfBirth && <div style={{ color: 'red' }}>{errorMessageDateOfBirth}</div>}
+                    {errorMessageDateOfBirth && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageDateOfBirth}</div>}
         
 
                     
@@ -980,20 +1012,21 @@ function Employee() {
                       <option value="Female">Female</option>
                       
                     </Form.Select>
-                    {errorMessageGender && <div style={{ color: 'red' }}>{errorMessageGender}</div>}
+                    {errorMessageGender && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageGender}</div>}
 
 
                     
                     <br></br>
-                    <Form.Label htmlFor="salary">salary</Form.Label>
+                    <Form.Label htmlFor="salary">Salary (Rs) <span style={{color: 'gray'}}>example: 20000.00</span></Form.Label>
                     <Form.Control
                       type="text"
                       id="salarySave"
                       aria-describedby="salaryHelpBlock"
                       value={salarySave}
+                      placeholder='eg: 20000.00'
                       onChange={(e)=>setSalarySave(e.target.value)}
                     />
-                    {errorMessageSalary && <div style={{ color: 'red' }}>{errorMessageSalary}</div>}
+                    {errorMessageSalary && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageSalary}</div>}
 
                     
                     <br></br>
@@ -1002,16 +1035,17 @@ function Employee() {
                       id="departmentSave"
                       aria-describedby="departmentHelpBlock"
                       value={departmentIdSave}
+                      placeholder='eg: Information Technology'
                       onChange={(e) => setDepartmentIdSave(e.target.value)}
                     >
                       <option value=''>Select department</option>
                       {departmentData.map((department) => (
                         <option key={department.departmentId} value={department.departmentId}>
-                          {department.departmentName}
+                           {department.departmentCode+" :- "}{department.departmentName}
                         </option>
                       ))}
                     </Form.Select>
-                    {errorMessageDepartment && <div style={{ color: 'red' }}>{errorMessageDepartment}</div>}
+                    {errorMessageDepartment && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageDepartment}</div>}
                     
 
 
@@ -1019,9 +1053,11 @@ function Employee() {
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseAdd}>
               Close
+              <AiOutlineClose className='m-1'/>
             </Button>
             <Button variant="success" onClick={handleSave}>
               Save
+              <AiFillSave className='m-1'/>
             </Button>
           </Modal.Footer>
       </Modal>
@@ -1033,61 +1069,66 @@ function Employee() {
             <Modal.Title>Update Employee</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-          <div>{errorMessageEdit && <div style={{ color: 'red' }}>{errorMessageEdit}</div>}</div>
-          <Form.Label htmlFor="nic">nic</Form.Label>
+          <div>{errorMessageEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageEdit}</div>}</div>
+          <Form.Label htmlFor="nic">NIC number</Form.Label>
                     <Form.Control
                       type="text"
                       id="nicEdit"
                       aria-describedby="nicHelpBlock"
                       value={nicNumberEdit}
+                      placeholder='eg: 208018201577 or 974567788v'
                       onChange={(e)=>setNicNumberEdit(e.target.value)}
                     />
-                    {errorMessageNICEdit && <div style={{ color: 'red' }}>{errorMessageNICEdit}</div>}
+                    {errorMessageNICEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageNICEdit}</div>}
                     <br></br>
 
-                    <Form.Label htmlFor="firstname">firstName</Form.Label>
+                    <Form.Label htmlFor="firstname">First name</Form.Label>
                     <Form.Control
                       type="text"
                       id="firstNameEdit"
                       aria-describedby="firstNameHelpBlock"
                       value={firstNameEdit}
+                      placeholder='eg: John'
                       onChange={(e)=>setFirstNameEdit(e.target.value)}
                     />
-                    {errorMessageFirstNameEdit && <div style={{ color: 'red' }}>{errorMessageFirstNameEdit}</div>}
+                    {errorMessageFirstNameEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageFirstNameEdit}</div>}
                     <br></br>
 
-                    <Form.Label htmlFor="lastName">lastName</Form.Label>
+                    <Form.Label htmlFor="lastName">Last name</Form.Label>
                     <Form.Control
                       type="text"
                       id="lastNameEdit"
                       aria-describedby="lastNameHelpBlock"
                       value={lastNameEdit}
+                      placeholder='eg: Deo'
                       onChange={(e)=>setLastNameEdit(e.target.value)}
                     />
-                    {errorMessageLastNameEdit && <div style={{ color: 'red' }}>{errorMessageLastNameEdit}</div>}
+                    {errorMessageLastNameEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageLastNameEdit}</div>}
 
 
                     <br></br>
-                    <Form.Label htmlFor="email">emailAddress</Form.Label>
+                    <Form.Label htmlFor="email">E-mail</Form.Label>
                     <Form.Control
                       type="text"
                       id="emailEdit"
                       aria-describedby="emailHelpBlock"
                       value={emailAddressEdit}
+                      placeholder='eg: example@gmail.com'
                       onChange={(e)=>setEmailAddressEdit(e.target.value)}
                     />
-                    {errorMessageEmailAddressEdit && <div style={{ color: 'red' }}>{errorMessageEmailAddressEdit}</div>}
+                    {errorMessageEmailAddressEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageEmailAddressEdit}</div>}
 
                     <br></br>
-                    <Form.Label htmlFor="mobile">mobileNumber</Form.Label>
+                    <Form.Label htmlFor="mobile">Mobile</Form.Label>
                     <Form.Control
                       type="text"
                       id="mobileEdit"
                       aria-describedby="mobileHelpBlock"
                       value={mobileNumberEdit}
+                      placeholder='0712345678'
                       onChange={(e)=>setMobileNumberEdit(e.target.value)}
                     />
-                    {errorMessageMobileNumberEdit && <div style={{ color: 'red' }}>{errorMessageMobileNumberEdit}</div>}
+                    {errorMessageMobileNumberEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageMobileNumberEdit}</div>}
 
                     
                     <br></br>
@@ -1099,6 +1140,7 @@ function Employee() {
                         onChange={(date) => setDateOfBirthEdit(date)}
                         dateFormat="yyyy-MM-dd"
                         className="form-control"
+                        placeholderText='eg: 1999-03-01'
                         ref={datePickerRef}
                       />
                       <div className="input-group-append" onClick={openDatePicker}>
@@ -1107,7 +1149,7 @@ function Employee() {
                         </span>
                       </div>
                     </div>
-                    {errorMessageDateOfBirthEdit && <div style={{ color: 'red' }}>{errorMessageDateOfBirthEdit}</div>}
+                    {errorMessageDateOfBirthEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageDateOfBirthEdit}</div>}
         
 
                     
@@ -1123,20 +1165,21 @@ function Employee() {
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
                     </Form.Select>
-                    {errorMessageGenderEdit && <div style={{ color: 'red' }}>{errorMessageGenderEdit}</div>}
+                    {errorMessageGenderEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageGenderEdit}</div>}
 
 
                     
                     <br></br>
-                    <Form.Label htmlFor="salary">salary</Form.Label>
+                    <Form.Label htmlFor="salary">Salary (Rs) <span style={{color: 'gray'}}>example: 20000.00</span></Form.Label>
                     <Form.Control
                       type="text"
                       id="salaryEdit"
                       aria-describedby="salaryHelpBlock"
                       value={salaryEdit}
+                      placeholder='eg: 20000.00'
                       onChange={(e)=>setSalaryEdit(e.target.value)}
                     />
-                    {errorMessageSalaryEdit && <div style={{ color: 'red' }}>{errorMessageSalaryEdit}</div>}
+                    {errorMessageSalaryEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageSalaryEdit}</div>}
 
                     
                     <br></br>
@@ -1150,19 +1193,20 @@ function Employee() {
                       <option value=''>Select department</option>
                       {departmentData.map((department) => (
                         <option key={department.departmentId} value={department.departmentId}>
-                          {department.departmentName}
+                          {department.departmentCode+" :- "}{department.departmentName}
                         </option>
                       ))}
                     </Form.Select>
-                    {errorMessageDepartmentEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentEdit}</div>}
+                    {errorMessageDepartmentEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageDepartmentEdit}</div>}
                     
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseEdit}>
               Close
+            <AiOutlineClose className='m-1'/>
             </Button>
             <Button variant="primary" onClick={()=>handleUpdate()}>
-              Update
+              Update<AiFillEdit className='m-1'/>
             </Button>
           </Modal.Footer>
       </Modal>
@@ -1173,13 +1217,30 @@ function Employee() {
           <Modal.Header closeButton>
             <Modal.Title>Delete Employee</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Do you need to permernatly delete this employee ?</Modal.Body>
+          <Modal.Body>Do you need to permernatly delete this employee ? if so just type as '<span style={{color:'red'}}>confirm</span>' then click ok
+          <div>
+                  <Form.Control
+                              type="text"
+                              id="deleteConfirmation"
+                              aria-describedby="deleteConformationHelpBlock"
+                              value={deleteConfirmation}
+                              placeholder='Type here'
+                              onChange={(e)=>setDeleteConfirmation(e.target.value)}
+                              className='mt-2'
+                  />
+                  {errorMessageDeleteConfirmation && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageDeleteConfirmation}</div>}
+
+          </div>
+          
+          </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseDelete}>
               Cancle
+            <AiOutlineClose className='m-1'/>
             </Button>
             <Button variant="danger" onClick={()=>handleDelete()}>
-              Yes
+              Ok
+              <AiOutlineCheck className='m-1'/>
             </Button>
           </Modal.Footer>
       </Modal>

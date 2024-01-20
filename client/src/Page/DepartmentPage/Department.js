@@ -12,6 +12,11 @@ import { BsFillExclamationTriangleFill } from 'react-icons/bs';
 import { BsBuilding } from 'react-icons/bs';
 import { BsPencil } from 'react-icons/bs';
 import { BsTrash } from 'react-icons/bs';
+import { AiFillEdit } from 'react-icons/ai';
+import { AiFillSave } from 'react-icons/ai';
+import { AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineCheck } from 'react-icons/ai';
+
 
 
 
@@ -76,7 +81,11 @@ function Department() {
 
   //const for Delete department modal
   const [showDelete, setShowDelete] = useState(false);
-  const handleCloseDelete = () => setShowDelete(false);
+  const handleCloseDelete = () => {
+    setDeleteConfirmation('');
+    setErrorMessageDeleteConfirmation('');
+    setShowDelete(false)
+  };
   const handleShowDelete = () => setShowDelete(true);
 
   //const for Alert box
@@ -108,7 +117,8 @@ function Department() {
     setErrorMessageDepartmentNameEdit('');
   }
 
-  
+  //validation cost in delete modal to check the deletion is confirm or not
+  const [errorMessageDeleteConfirmation,setErrorMessageDeleteConfirmation] =useState('');
 
 
 
@@ -413,64 +423,74 @@ function Department() {
 
   //handle delete department
   const [departmentIdNeedToDelete,setDepartmentIdNeedToDelete] = useState(0);
+  const [deleteConfirmation,setDeleteConfirmation] =useState('');//set delete conformation string;
   const handleDelete = async () => {
     const delete_url = `${baseUrlDepartment}/deleteDepartment/${departmentIdNeedToDelete}`;
   
     try {
       // Check if there is a foreign key constraint violation
       const isForeignKeyViolation = await checkForeignKeyConstraintViolations(departmentIdNeedToDelete);
-  
-      if (!isForeignKeyViolation) {
-        // No foreign key constraint violation, proceed with deletion
-        try {
-          var _department_name = null;
-          var _department_code=null;
-          for(const department of departmentData){
-              if(department.departmentId===departmentIdNeedToDelete){
-                   _department_name=department.departmentName;
-                   _department_code=department.departmentCode;
-              }
-          }
-          
-          const response = await axios.delete(delete_url);
-          console.log(response.data);
-          handleCloseDelete();
-          setDepartmentIdNeedToDelete(0);
-          fetchDepartmentData();
-          toast.warning("Department " + _department_name + " deleted permanentl ( Department code: "+_department_code+" )");
-        } catch (error) {
-          if (axios.isAxiosError(error)) {
-            // Axios error, check if it's a network error
-            if (error.response) {
-              // The request was made, but the server responded with an error status
-              console.error('Request made, but server responded with an error:', error.response.data);
-              serverResponseFaliur_1();
-             
-            } else if (error.request) {
-              // The request was made, but no response was received
-              console.error('No response received from the server:', error.request);
-              serverResponseFaliur_2();
-              
-            } else {
-              // Something went wrong in setting up the request
-              console.error('Error setting up the request:', error.message);
-              serverResponseFaliur_3();
-              
-            }
-          } else {
-            // Not an Axios error, handle it accordingly
-             console.error('Non-Axios error occurred:', error);
-             serverResponseFaliur_4();
-            
-          }
-        }
+       
+      if(deleteConfirmation.toLocaleLowerCase()=='confirm'){
+          setErrorMessageDeleteConfirmation('');
+          setDeleteConfirmation('');
 
-      } else {
-        // There is a foreign key constraint violation, handle accordingly
-        handleCloseDelete();
-        handleShowAlert();
-       // toast.error('Employees are depend on this department');
-      }
+          if (!isForeignKeyViolation) {
+            // No foreign key constraint violation, proceed with deletion
+            try {
+              var _department_name = null;
+              var _department_code=null;
+              for(const department of departmentData){
+                  if(department.departmentId===departmentIdNeedToDelete){
+                      _department_name=department.departmentName;
+                      _department_code=department.departmentCode;
+                  }
+              }
+              
+              const response = await axios.delete(delete_url);
+              console.log(response.data);
+              handleCloseDelete();
+              setDepartmentIdNeedToDelete(0);
+              fetchDepartmentData();
+              toast.warning("Department " + _department_name + " deleted permanentl ( Department code: "+_department_code+" )");
+            } catch (error) {
+              if (axios.isAxiosError(error)) {
+                // Axios error, check if it's a network error
+                if (error.response) {
+                  // The request was made, but the server responded with an error status
+                  console.error('Request made, but server responded with an error:', error.response.data);
+                  serverResponseFaliur_1();
+                
+                } else if (error.request) {
+                  // The request was made, but no response was received
+                  console.error('No response received from the server:', error.request);
+                  serverResponseFaliur_2();
+                  
+                } else {
+                  // Something went wrong in setting up the request
+                  console.error('Error setting up the request:', error.message);
+                  serverResponseFaliur_3();
+                  
+                }
+              } else {
+                // Not an Axios error, handle it accordingly
+                console.error('Non-Axios error occurred:', error);
+                serverResponseFaliur_4();
+                
+              }
+            }
+
+          } else {
+            // There is a foreign key constraint violation, handle accordingly
+            handleCloseDelete();
+            handleShowAlert();
+          // toast.error('Employees are depend on this department');
+          }
+     }
+     else{
+          setDeleteConfirmation('');
+          setErrorMessageDeleteConfirmation("This action is Not Confirm, type as 'confirm' to delete this department");
+     }
     } catch (error) {
       console.error("Error checking foreign key constraint", error);
       toast.error("Failed to check foreign key constraint");
@@ -589,32 +609,36 @@ function Department() {
                             <Modal.Title>Add Deparment</Modal.Title>
                           </Modal.Header>
                           <Modal.Body>
-                              <div>{errorMessageDepartmentSave && <div style={{ color: 'red' }}>{errorMessageDepartmentSave}</div>}</div>
+                              <div>{errorMessageDepartmentSave && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageDepartmentSave}</div>}</div>
                               <Form.Label htmlFor="departmentCode">Department Code</Form.Label>
                               <Form.Control
                                 type="text"
                                 id="depID"
                                 value={departmentCodeSave}
+                                placeholder='eg: IT102'
                                 onChange={(e)=>setDepartmentCodeSave(e.target.value)}
                               />
-                              {errorMessageDepartmentCodeSave && <div style={{ color: 'red' }}>{errorMessageDepartmentCodeSave}</div>}
+                              {errorMessageDepartmentCodeSave && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageDepartmentCodeSave}</div>}
                               <br></br>
                               <Form.Label htmlFor="departmentName">Deparment Name</Form.Label>
                               <Form.Control
                                 type="text"
                                 id="depName"
                                 value={departmentNameSave}
+                                placeholder='eg: Information Technology'
                                 onChange={(e)=>setDepartmentNameSave(e.target.value)}
                               />
-                              {errorMessageDepartmentNameSave && <div style={{ color: 'red' }}>{errorMessageDepartmentNameSave}</div>}
+                              {errorMessageDepartmentNameSave && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageDepartmentNameSave}</div>}
 
                           </Modal.Body>
                           <Modal.Footer>
                             <Button variant="secondary" onClick={handleCloseAdd}>
                               Close
+                              <AiOutlineClose className='m-1'/>
                             </Button>
                             <Button variant="primary" onClick={()=>{handleSave()}}>
                               Save
+                              <AiFillSave className='m-1'/>
                             </Button>
                           </Modal.Footer>
                   </Modal>
@@ -626,31 +650,35 @@ function Department() {
                       <Modal.Title>Update Deparment</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                    <div>{errorMessageDepartmentEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentEdit}</div>}</div>
+                    <div>{errorMessageDepartmentEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageDepartmentEdit}</div>}</div>
                         <Form.Label htmlFor="departmentCode">Department Code</Form.Label>
                         <Form.Control
                           type="text"
                           id="depID"
                           value={departmentCodeEdit}
+                          placeholder='eg: IT102'
                           onChange={(e)=>setDepartmentCodeEdit(e.target.value)}
                         />
-                        {errorMessageDepartmentCodeEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentCodeEdit}</div>}
+                        {errorMessageDepartmentCodeEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageDepartmentCodeEdit}</div>}
                         <br></br>
                         <Form.Label htmlFor="departmentName">Deparment Name</Form.Label>
                         <Form.Control
                           type="text"
                           id="depName"
                           value={departmentNameEdit}
+                          placeholder='eg: Information Technology'
                           onChange={(e)=>setDepartmentNameEdit(e.target.value)}
                         />
-                        {errorMessageDepartmentNameEdit && <div style={{ color: 'red' }}>{errorMessageDepartmentNameEdit}</div>}
+                        {errorMessageDepartmentNameEdit && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageDepartmentNameEdit}</div>}
                     </Modal.Body>
                     <Modal.Footer>
                       <Button variant="secondary" onClick={()=>{handleCloseEdit(); setdepartmentIdNeedToUpdate(0);/*reset the department id need to update*/}}>
                         Close
+                        <AiOutlineCheck className='m-1'/>
                       </Button>
                       <Button variant="primary" onClick={()=>{handleEdit()}}>
                         Update
+                        <AiFillEdit className='m-1'/>
                       </Button>
                     </Modal.Footer>
                   </Modal>
@@ -661,13 +689,29 @@ function Department() {
                     <Modal.Header closeButton>
                       <Modal.Title>Delete Department</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>Do you need to permernatly delete this Department information ?</Modal.Body>
+                    <Modal.Body>Do you need to permernatly delete this Department information ? if so just type as '<span style={{color:'red'}}>confirm</span>' then click ok
+                        <div>
+                          <Form.Control
+                                      type="text"
+                                      id="deleteConfirmation"
+                                      aria-describedby="deleteConformationHelpBlock"
+                                      value={deleteConfirmation}
+                                      placeholder='Type here'
+                                      onChange={(e)=>setDeleteConfirmation(e.target.value)}
+                                      className='mt-2'
+                          />
+                          {errorMessageDeleteConfirmation && <div className='ErrorMessage'><BsFillExclamationTriangleFill className='m-2'/>{errorMessageDeleteConfirmation}</div>}
+
+                        </div>
+                    </Modal.Body>
                     <Modal.Footer>
                       <Button variant="secondary" onClick={()=>{handleCloseDelete(); setDepartmentIdNeedToDelete(0);/**reset department id need to delete when close the modal*/}}>
                         Cancle
+                        <AiOutlineClose className='m-1'/>
                       </Button>
                       <Button variant="danger" onClick={()=>{handleDelete()}}>
-                        Yes
+                        Ok
+                        <AiOutlineCheck className='m-1'/>
                       </Button>
                     </Modal.Footer>
                   </Modal>

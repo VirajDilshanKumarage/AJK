@@ -3,6 +3,7 @@
     padding: 20px;
     border-style: solid;
     margin: 10px;
+    background-color:rgba(19, 214, 214, 0.082) ;
 }
 
 .DepartmentTable{
@@ -12,5 +13,9 @@
 
 .AddDepartmentButton{
     width: 25%;
+}
+
+.ErrorMessage{
+    color: red;
 }
 
