@@ -8,6 +8,7 @@ import Image from 'react-bootstrap/Image';
 import Row from 'react-bootstrap/Row';
 import homeImage from '../../../src/asset/home_image.png';
 import 'animate.css/animate.min.css';
+import { HiHand } from 'react-icons/hi';
 
 
 
@@ -24,7 +25,7 @@ function Home() {
       <div className='home_content '>
         <div>
           <h3 className='d-flex justify-content-center align-items-center'>welcome</h3>
-          <p className='d-flex justify-content-center align-items-center'>' Hello There '</p>
+          <p className='d-flex justify-content-center align-items-center'>' Hello There '<span><HiHand/></span></p>
         </div>
       </div>
       <div>

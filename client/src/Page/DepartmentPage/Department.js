@@ -569,11 +569,11 @@ function Department() {
                     <hr/>
                     <Button variant="success" onClick={()=>handleShowAdd()} className='AddDepartmentButton'>Add Department<BsBuilding className='m-2'/></Button>
                       <Table striped bordered hover className='DepartmentTable'>
-                    <thead>
-                      <tr >
-                        <th className="text-center">Department Code</th>
-                        <th className="text-center">Department Name</th>
-                        <th className="text-center">Action</th>
+                    <thead >
+                      <tr>
+                        <th className="text-center">department code</th>
+                        <th className="text-center">department name</th>
+                        <th className="text-center">action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -641,7 +641,7 @@ function Department() {
                               Close
                               <AiOutlineClose className='m-1'/>
                             </Button>
-                            <Button variant="primary" onClick={()=>{handleSave()}}>
+                            <Button variant="success" onClick={()=>{handleSave()}}>
                               Save
                               <AiFillSave className='m-1'/>
                             </Button>

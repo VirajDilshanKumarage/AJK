@@ -1,11 +1,12 @@
 CREATE DATABASE AJK
 
 use AJK
--- delete table
+
+--to delete table
 DROP TABLE Employee;
 
 
--- create table called employee
+--to create table called employee
 CREATE TABLE Employee (
     employee_id INT IDENTITY(1,1) PRIMARY KEY,
     nic_number VARCHAR(20) UNIQUE,
@@ -21,13 +22,13 @@ CREATE TABLE Employee (
 	FOREIGN KEY (department_id) REFERENCES Department(department_id)
 );
 
--- add foreign key
+--to add foreign key
 ALTER TABLE Employee
 ADD CONSTRAINT FK_Employee_Department
 FOREIGN KEY (department_id) REFERENCES Department(department_id);
 
 
--- create table called Department
+--to create table called Department
 CREATE TABLE Department (
     department_id INT IDENTITY(1,1) PRIMARY KEY,
     department_code VARCHAR(50),
@@ -37,7 +38,7 @@ CREATE TABLE Department (
 
 
 
--- insert a employee
+--to insert a employee
 INSERT INTO Employee (
     nic_number,
     first_name,
@@ -62,7 +63,7 @@ VALUES (
 );
 
 
--- insert a department
+--to insert a department
 INSERT INTO Department(
     department_code,
 	department_name
@@ -74,11 +75,11 @@ VALUES (
 );
 
 
--- get all employees
-select * from Employee
+--to get all employees
+SELECT * FROM Employee
 
 -- get all department
-select * from Department
+SELECT * FROM Department
 
 
 
@@ -106,7 +107,7 @@ BEGIN
         Department d ON e.department_id = d.department_id;
 END;
 
--- execute the created stored procedure GetEmployeeDetailsWithDepartmentName
+--to execute the created stored procedure GetEmployeeDetailsWithDepartmentName
 EXEC GetEmployeeDetailsWithDepartmentName;
 
 

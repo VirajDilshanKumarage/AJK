@@ -451,27 +451,27 @@ function Employee() {
           }
 
           //validation for department field add modal
-          function departmentValidation(data){
-                 fetchDepartmentData();
-                 console.log(departmentData);
-                  if(departmentData && departmentData.length>0){
-
-                        for (const department of departmentData) {
-                            if (department.departmentId == data.departmentId) {
-                                setErrorMessageDepartment('');
-                                return true;
-                            }
-                          setErrorMessageDepartment('Select an existing department');
-                          return false;
-                        }
-                        
-                  
-                  }
-                 setErrorMessageDepartment('There are no any department, Add a department first');
-                 return false;
-
-                     
+          function departmentValidation(data) {
+            fetchDepartmentData();
+            console.log(departmentData);
+        
+            if (departmentData && departmentData.length > 0) {
+                for (const department of departmentData) {
+                    if (department.departmentId == data.departmentId) {
+                        setErrorMessageDepartment('');
+                        return true;
+                    }
+                }
+                // The loop finished, and no matching department was found
+                setErrorMessageDepartment('Select an existing department');
+                return false;
+            }
+        
+            // No departments available
+            setErrorMessageDepartment('There are no departments, add a department first');
+            return false;
           }
+        
         
         
        
@@ -839,6 +839,7 @@ function Employee() {
     return (
     <>
       <ToastContainer />
+      {/* table */}
       <div className='EmployeeBackground'>
       <div className='EmployeeContent'>
         <h5 className="d-flex justify-content-center align-items-center">Employee Details</h5>
@@ -847,17 +848,17 @@ function Employee() {
         <Table striped bordered hover className='EmployeeTable' >
           <thead>
             <tr>
-              <th className="text-center">NIC</th>
-              <th className="text-center">First Name</th>
-              <th className="text-center">Last Name</th>
-              <th className="text-center">Email Address</th>
-              <th className="text-center">Mobile Number</th>
-              <th className="text-center">Date of Birth</th>
-              <th className="text-center">Age</th>
-              <th className="text-center">Gender</th>
-              <th className="text-center">Salary</th>
-              <th className="text-center">Department Name</th>
-              <th className="text-center">Action</th>
+              <th className="text-center">nic</th>
+              <th className="text-center">first name</th>
+              <th className="text-center">last name</th>
+              <th className="text-center">email</th>
+              <th className="text-center">mobile</th>
+              <th className="text-center">birthday</th>
+              <th className="text-center">age</th>
+              <th className="text-center">gender</th>
+              <th className="text-center">salary</th>
+              <th className="text-center">department</th>
+              <th className="text-center">action</th>
             </tr>
           </thead>
           <tbody>
