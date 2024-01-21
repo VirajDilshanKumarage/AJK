@@ -406,7 +406,7 @@ function Department() {
 
 
 
-  //exception handleing end points
+  //exception handleing end points to call API
   //foreign key constrain violation
   const checkForeignKeyConstraintViolations=async (_departmentId)=>{
 
@@ -502,7 +502,7 @@ function Department() {
   };
   
 
-
+  
 
 
 
@@ -512,7 +512,7 @@ function Department() {
   return (
 
                 <>
-                
+                  
                   {/* alert box for show foreing key constrain */}
                   <Modal show={showAlert} variant='danger'>
                     <Modal.Body>
