@@ -19,7 +19,7 @@ import { redirectDocument } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Alert from 'react-bootstrap/Alert';
 import Loader from '../../Component/Loader/Loader';
-import { BsFillExclamationTriangleFill } from 'react-icons/bs';
+import { BsCheck, BsFillExclamationTriangleFill } from 'react-icons/bs';
 import { BsFillPersonPlusFill } from 'react-icons/bs';
 import { BsPencil } from 'react-icons/bs';
 import { BsTrash } from 'react-icons/bs';
@@ -236,6 +236,17 @@ function Employee() {
   const [salaryEdit,setSalaryEdit] = useState(0.0);
   const [departmentIdEdit,setDepartmentIdEdit] = useState(0);
 
+  //validation pattern 
+  const PatternForNewNic = /^\d{12}$/;                  // eg: 976756458v
+  const PatternForOldNic = /^\d{9}v$/;                  // eg: 200018201577
+  const PatternForFirstAndLastNames=/^[a-zA-Z]+$/;      // eg: Viarj
+  const PatternForEmail =/^[^\s@]+@[^\s@]+\.[^\s@]+$/;  // eg: Kumarage
+  const PatternForMobile =/^0\d{9}$/;                   // eg: 0777007889
+  const PatternForSalary=/^\d+(\.\d+)?$/;               // eg: 50000.00 and salary > 500.00 Rs
+  const PatternForDateOfBirth ='';                      // still no need to creat regular expression
+
+
+
   //here I create the cons to store the employee id that wanted to update it set in handleEdit() and then use the value in hadleUpdate()
   const [empID , setEmpID] =useState(0);
 
@@ -341,17 +352,26 @@ function Employee() {
           
           //validation for nic number in add modal
           function nicValidation(data){
+              
+              
+              //check entered nic number is already used or not 
               fetchEmployeeData();
-
               for (const employee of employeeData) {
                 if (employee.nicNumber === data.nicNumber) {
                     setErrorMessageNIC("NIC already used by another employee");
                     return false;
                 }
               }
+             
+              //check modern nic numbers that having 12 digits
+              if(PatternForNewNic.test(data.nicNumber))
+              {
+                setErrorMessageNIC('');
+                return true;
+              }
 
-            
-              if(data.nicNumber.length===12 || data.nicNumber.length===10){
+              //check old nic numbers: 9 digits and final character is 'v' 
+              if(PatternForOldNic.test(data.nicNumber.toLowerCase())){
                 setErrorMessageNIC('');
                 return true;
               }
@@ -361,17 +381,21 @@ function Employee() {
 
           //validation for first name field in add modal
           function firstNameValidation(data){
-            if(data.firstName.length>1 && !/\d/.test(data.firstName)){
-               setErrorMessageFirstName('');
-               return true
-            }
-            setErrorMessageFirstName("Enter valid mane as first name. can't use numbers");
-            return false
+
+            
+              if(PatternForFirstAndLastNames.test(data.firstName.toLowerCase()) && data.firstName.length>1){
+                setErrorMessageFirstName('');
+                return true
+              }
+              setErrorMessageFirstName("Enter valid mane as first name. can't use numbers");
+              return false
           }
           
           //validation for last name field in add modal
           function lastNameValidation(data){
-            if(data.lastName.length>1 && !/\d/.test(data.lastName)){
+
+            
+            if(PatternForFirstAndLastNames.test(data.lastName.toLowerCase()) && data.lastName.length>1){
                setErrorMessageLastName('');
                return true
             }
@@ -381,7 +405,8 @@ function Employee() {
           
           //validation for email address field in add modal
           function emailAddressValidation(data){
-            if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.emailAddress)){
+
+            if(PatternForEmail.test(data.emailAddress)){
               setErrorMessageEmailAddress('');
               return true;
             }
@@ -391,7 +416,7 @@ function Employee() {
           
           //validation for mobile number field in add modal
           function mobileNumberValidation(data){
-            if(data.mobileNumber.length===10 &&  /^\d+$/.test(data.mobileNumber)){
+            if(PatternForMobile.test(data.mobileNumber)){
               setErrorMessageMobileNumber('');
               return true;
             }
@@ -442,7 +467,7 @@ function Employee() {
 
           //validation for salary field add modal
           function salaryValidation(data){
-            if(data.salary>=500.00 && /^\d+(\.\d+)?$/.test(data.salary)){
+            if(data.salary>=500.00 && PatternForSalary.test(data.salary)){
               setErrorMessageSalary('')
               return true;
             }
@@ -612,30 +637,36 @@ function Employee() {
       //validation for nic in edit modal
       function nicValidationEdit(updatedData){
 
-        for (const employee of employeeData) {
-          // Skip the current employee being updated
-          if (employee.employeeId === _employeeId) {
-              continue;
-          }
-      
-          if (employee.nicNumber === updatedData.nicNumber) {
-              setErrorMessageNICEdit("NIC already used by another employee");
-              return false;
-          }
-       }
-      
+            for (const employee of employeeData) {
+              // Skip the current employee being updated
+              if (employee.employeeId === _employeeId) {
+                  continue;
+              }
+          
+              if (employee.nicNumber === updatedData.nicNumber) {
+                  setErrorMessageNICEdit("NIC already used by another employee");
+                  return false;
+              }
+            }
+          
+            //validatio for modern nic that having 12 digits
+            if(PatternForNewNic.test(updatedData.nicNumber)){
+                setErrorMessageNICEdit('');
+                return true;
+            }
 
-        if(updatedData.nicNumber.length===12 || updatedData.nicNumber.length===10){
-          setErrorMessageNICEdit('');
-          return true;
-        }
-        setErrorMessageNICEdit("Enter a valid nic number");
-        return false;
+            //validation for old nic that having 9 digits and v 
+            if(PatternForOldNic.test(updatedData.nicNumber.toLowerCase())){
+              setErrorMessageNICEdit('');
+              return true;
+            }
+            setErrorMessageNICEdit("Enter a valid nic number");
+            return false;
       }
 
       //validation for first name in edit modal
       function firstNameValidation(updatedData){
-        if(updatedData.firstName.length>1 && !/\d/.test(updatedData.firstName)){
+        if(PatternForFirstAndLastNames.test(updatedData.firstName.toLowerCase()) && updatedData.firstName.length>1){
            setErrorMessageFirstNameEdit('');
            return true
         }
@@ -645,7 +676,7 @@ function Employee() {
 
       //validation for last name in edit modal
       function lastNameValidation(updatedData){
-        if(updatedData.lastName.length>1 && !/\d/.test(updatedData.lastName)){
+        if(PatternForFirstAndLastNames.test(updatedData.lastName.toLowerCase()) && updatedData.lastName.length>1){
            setErrorMessageLastNameEdit('');
            return true
         }
@@ -655,7 +686,7 @@ function Employee() {
 
       //validation for email in edit modal
       function emailAddressValidation(updatedData){
-        if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(updatedData.emailAddress)){
+        if(PatternForEmail.test(updatedData.emailAddress)){
           setErrorMessageEmailAddressEdit('');
           return true;
         }
@@ -663,9 +694,9 @@ function Employee() {
         return false;
       }
       
-      //validation for moblie number in edut modal
+      //validation for moblie number in edit modal
       function mobileNumberValidation(updatedData){
-        if(updatedData.mobileNumber.length===10 &&  /^\d+$/.test(updatedData.mobileNumber)){
+        if(PatternForMobile.test(updatedData.mobileNumber)){
           setErrorMessageMobileNumberEdit('');
           return true;
         }
@@ -717,7 +748,7 @@ function Employee() {
       
       //validation for salary in edit modal
       function salaryValidation(updatedData){
-        if(updatedData.salary>=500.00 && /^\d+(\.\d+)?$/.test(updatedData.salary)){
+        if(updatedData.salary>=500.00 && PatternForSalary.test(updatedData.salary)){
           setErrorMessageSalaryEdit('')
           return true;
         }
@@ -878,7 +909,7 @@ function Employee() {
                   <td>{employee.age}</td>
                   <td>{employee.gender}</td>
                   <td>{employee.salary.toFixed(2)}</td>
-                  <td>{employee.departmentName}</td>
+                  <td>{employee.departmentName}<div style={{color:'gray',fontSize:'15px'}}>code: {employee.departmentCode}</div></td>
                   <td colSpan={2} className="d-flex justify-content-center align-items-center">
                     <Button variant="primary" onClick={() => handleEdit(employee.employeeId)}>Edit<BsPencil className='m-1'/></Button> &nbsp;
                     <Button variant="danger" onClick={() => { setempIDToDelete(employee.employeeId); handleShowDelete();}}>Delete <BsTrash className='m-1'/></Button>

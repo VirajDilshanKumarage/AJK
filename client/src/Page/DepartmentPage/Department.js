@@ -25,18 +25,18 @@ function Department() {
   //const for server error
   const [serverErrorMessage,setServerErrorMessage]=useState('');
 
-   //const fro Server error alert box :- showAlertServerError
-   const [showAlertServerError, setShowAlertServerError] = useState(false);
-   const handleCloseAlertServerError = () => {
+  //const fro Server error alert box :- showAlertServerError
+  const [showAlertServerError, setShowAlertServerError] = useState(false);
+  const handleCloseAlertServerError = () => {
      setShowAlertServerError(false);
      setServerErrorMessage('');
-   }
-   const handleShowAlertServerError = () => {
+  }
+  const handleShowAlertServerError = () => {
      handleCloseAdd();
      handleCloseDelete();
      handleCloseEdit();
      setShowAlertServerError(true);
-   }
+  }
    
 
   //function for server down error 1
@@ -96,8 +96,9 @@ function Department() {
   const handleCloseAlert = () => setShowAlert(false);
   const handleShowAlert = () => setShowAlert(true);
   
- 
 
+  //validation pattern for department name connot include number for department name
+  const PatternForDepartmentName = /\d/;  // regular expression for validate department name use in save and edit modal
 
   //const for validation error messages in add modal
   const [errorMessageDepartmentSave,setErrorMessageDepartmentSave]= useState('');
@@ -168,7 +169,7 @@ function Department() {
   }
 
 
- //save department methodt
+  //save department methodt
   const handleSave=async ()=>{
    
     
@@ -211,8 +212,8 @@ function Department() {
 
       //validation for department name in save modal :- customize the validation and constrains
       function validationDepartmentName(data){
-        var regex =/\d/;  // Regular expression to check if there is a number in the string
-        if(data.departmentName!=='' && data.departmentName.length>1 && !regex.test(data.departmentName)){
+        
+        if(data.departmentName!=='' && data.departmentName.length>1 && !PatternForDepartmentName.test(data.departmentName)){
           setErrorMessageDepartmentNameSave('');
           return true;
         }
@@ -301,9 +302,10 @@ function Department() {
     setDepartmentCodeEdit('');
     setDepartmentNameEdit('');
   }
-
+  
+  //update data handleing
   const handleEdit=()=>{
-   const put_url =`${baseUrlDepartment}/updateDepartment/${departmentIdNeedToUpdate}`;
+    const put_url =`${baseUrlDepartment}/updateDepartment/${departmentIdNeedToUpdate}`;
 
     const updateDepartment={
       "departmentCode": departmentCodeEdit,
@@ -312,7 +314,7 @@ function Department() {
     
     clearErrorMessageEdit();     
   
-      //validation for all field check all input fields are filled
+    //validation for all field check all input fields are filled
     function isFilled(data){
         if(data.departmentCode!=='' && data.departmentName!==''){
           setErrorMessageDepartmentEdit('');
@@ -321,10 +323,10 @@ function Department() {
         setErrorMessageDepartmentEdit('All fields are required');
         return false;
 
-     }
+    }
 
-     //validation for Department code in edit modal
-      function validationDepartmentCode(data){
+    //validation for Department code in edit modal
+    function validationDepartmentCode(data){
          fetchDepartmentData();
         for (const department of departmentData) {
           // Skip the current employee being updated
@@ -346,18 +348,17 @@ function Department() {
         return false;
 
         
-       }
+    }
 
-     //validation for department name in edit modal :- customize the validation and constrains
-     function validationDepartmentName(data){
-       var regex = /\d/;  // Regular expression to check if there is a number in the string
-       if(data.departmentName!=='' && data.departmentName.length>1 && !regex.test(data.departmentName)){
+    //validation for department name in edit modal :- customize the validation and constrains
+    function validationDepartmentName(data){
+       if(data.departmentName!=='' && data.departmentName.length>1 && !PatternForDepartmentName.test(data.departmentName)){
          setErrorMessageDepartmentNameEdit('');
          return true;
        }
        setErrorMessageDepartmentNameEdit('Enter valid department name, Numbers cannot be used');
          return false;
-     }
+    }
 
 
     if(isFilled(updateDepartment) && validationDepartmentCode(updateDepartment) && validationDepartmentName(updateDepartment)){
@@ -393,7 +394,7 @@ function Department() {
         serverResponseFaliur_4();
       }
     }
-  }else{
+    }else{
 
     console.error("Error: validation, handleEdit");
     toast.error('Department details invalid');
@@ -605,7 +606,6 @@ function Department() {
                         ""
                     }
                   </div>
-
 
 
                   {/* add department modal */}

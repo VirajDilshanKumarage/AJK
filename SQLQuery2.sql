@@ -31,7 +31,7 @@ FOREIGN KEY (department_id) REFERENCES Department(department_id);
 --to create table called Department
 CREATE TABLE Department (
     department_id INT IDENTITY(1,1) PRIMARY KEY,
-    department_code VARCHAR(50),
+    department_code VARCHAR(50) UNIQUE,
     department_name VARCHAR(50)
 );
 
@@ -86,7 +86,7 @@ SELECT * FROM Department
 
 -- to get all emplyee details with department name
 -- Create a stored procedure
-CREATE PROCEDURE GetEmployeeDetailsWithDepartmentName
+CREATE PROCEDURE GetEmployeeDetailsWithDepartmentNameAndDepartmentCode
 AS
 BEGIN
     SELECT
@@ -100,7 +100,8 @@ BEGIN
         e.age,
         e.gender,
         e.salary,
-        d.department_name
+        d.department_name,
+		d.department_code
     FROM
         Employee e
     JOIN
@@ -341,5 +342,7 @@ END;
 EXEC CheckNumberOfEmployeeInDepartment 4;
 -- drop stroed procedure
 DROP PROCEDURE IF EXISTS GetDepartmentById;
+DROP  PROCEDURE IF EXISTS GetEmployeeDetailsWithDepartmentName;-- I drop the  GetEmployeeDetailsWithDepartmentName and add department code also then  GetEmployeeDetailsWithDepartmentNameAndDepartmentCode
+
 
 -- 2024/1/20

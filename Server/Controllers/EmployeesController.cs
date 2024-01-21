@@ -25,7 +25,7 @@ namespace EmployeesController.Controllers
 
             List<GetEmployee> getEmployeeList =new List<GetEmployee>();
             
-            string storedProcedure ="GetEmployeeDetailsWithDepartmentName";// stroed procedure for get all emplyee's details with department name instead of department code
+            string storedProcedure ="GetEmployeeDetailsWithDepartmentNameAndDepartmentCode";// stroed procedure for get all emplyee's details with department name instead of department code
 
             using (SqlConnection connection =new SqlConnection(_configuration.GetConnectionString(connetionString)))
             {
@@ -51,6 +51,7 @@ namespace EmployeesController.Controllers
                         getEmployeeObj.Gender= employeeTable.Rows[i]["gender"].ToString();
                         getEmployeeObj.Salary= Convert.ToDecimal(employeeTable.Rows[i]["salary"]);
                         getEmployeeObj.DepartmentName= employeeTable.Rows[i]["department_name"].ToString();
+                        getEmployeeObj.DepartmentCode=employeeTable.Rows[i]["department_code"].ToString();
 
                         getEmployeeList.Add(getEmployeeObj);
                 }
