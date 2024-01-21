@@ -18,7 +18,7 @@ const Loader = ({callFetchEmployeeInEmployeeComponet,callFetchDepartmentInDepart
         callFetchDepartmentInDepartmentComponent(); //load the department data
         // Perform your data fetching or any other initialization here
         // For now, let's simulate a delay using setTimeout
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         // Update loading state to false once done
         setLoading(false);
