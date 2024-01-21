@@ -5,7 +5,7 @@ import './Loader.css'; // Import your CSS file
 import '../../Page/EmployeePage/Employee'
 import Employee from '../../Page/EmployeePage/Employee';
 
-const Loader = () => {
+const Loader = ({callFetchEmployeeInEmployeeComponet,callFetchDepartmentInDepartmentComponent}) => {
   const [loading, setLoading] = useState(true);
   
 
@@ -13,6 +13,9 @@ const Loader = () => {
     // Simulate an asynchronous operation (e.g., fetching data)
     const fetchData = async () => {
       try {
+        
+        callFetchEmployeeInEmployeeComponet();      //load the employee data
+        callFetchDepartmentInDepartmentComponent(); //load the department data
         // Perform your data fetching or any other initialization here
         // For now, let's simulate a delay using setTimeout
         await new Promise(resolve => setTimeout(resolve, 200));

@@ -13,13 +13,16 @@ function App() {
 
    <>
   {/* just loader  */}
-   <Loader/>
+   <Loader 
+       callFetchEmployeeInEmployeeComponet = {Employee().fetchEmployeeData}
+       callFetchDepartmentInDepartmentComponent = {Department().fetchDepartmentData}
+   />
    <Navigationbar/>
       <Router>
       <Routes>
          <Route path='/' element={<Home/>} />
          <Route path='/Employee' element={<Employee/>}/>
-         <Route path='/Department' element={<Department/>}/>
+         <Route path='/Department' element={<Department />}/>
       </Routes>
     </Router>
     
