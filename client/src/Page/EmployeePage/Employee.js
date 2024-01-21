@@ -596,7 +596,7 @@ function Employee() {
 
       clearErrorMessageEdit();
 
-      // validation for edit for
+      // validation for edit modal check all the fields are filled or not
       function isDataFilled(updatedData) {
         const requiredFields = ['nicNumber', 'firstName', 'lastName', 'emailAddress', 'mobileNumber', 'dateOfBirth', 'gender', 'salary', 'departmentId'];
         for (const field of requiredFields) {
@@ -609,7 +609,7 @@ function Employee() {
         return true;
       }
     
-
+      //validation for nic in edit modal
       function nicValidationEdit(updatedData){
 
         for (const employee of employeeData) {
@@ -633,7 +633,7 @@ function Employee() {
         return false;
       }
 
-
+      //validation for first name in edit modal
       function firstNameValidation(updatedData){
         if(updatedData.firstName.length>1 && !/\d/.test(updatedData.firstName)){
            setErrorMessageFirstNameEdit('');
@@ -643,6 +643,7 @@ function Employee() {
         return false
       }
 
+      //validation for last name in edit modal
       function lastNameValidation(updatedData){
         if(updatedData.lastName.length>1 && !/\d/.test(updatedData.lastName)){
            setErrorMessageLastNameEdit('');
@@ -652,6 +653,7 @@ function Employee() {
         return false
       }
 
+      //validation for email in edit modal
       function emailAddressValidation(updatedData){
         if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(updatedData.emailAddress)){
           setErrorMessageEmailAddressEdit('');
@@ -661,7 +663,7 @@ function Employee() {
         return false;
       }
       
-
+      //validation for moblie number in edut modal
       function mobileNumberValidation(updatedData){
         if(updatedData.mobileNumber.length===10 &&  /^\d+$/.test(updatedData.mobileNumber)){
           setErrorMessageMobileNumberEdit('');
@@ -672,6 +674,7 @@ function Employee() {
         return false;
       }
 
+      //validation for date of birth in edir modal 
       function dateOfBirthValidation(updatedData) {
         if (updatedData.dateOfBirth === '') {
           setErrorMessageDateOfBirthEdit("Set birthday");
@@ -702,7 +705,7 @@ function Employee() {
         return false;
       }
       
-
+      //validation for gender in edit modal
       function genderValidation(updatedData){
          if(updatedData.gender.toLowerCase()==='male' || updatedData.gender.toLowerCase()==='female'){
               setErrorMessageGenderEdit('');
@@ -711,7 +714,8 @@ function Employee() {
          setErrorMessageGenderEdit('Enter valid value');
          return false;
       }
-
+      
+      //validation for salary in edit modal
       function salaryValidation(updatedData){
         if(updatedData.salary>=500.00 && /^\d+(\.\d+)?$/.test(updatedData.salary)){
           setErrorMessageSalaryEdit('')
@@ -721,7 +725,7 @@ function Employee() {
         return false;
       }
 
-
+      //validation for department in edit modal
       function departmentValidation(updatedData){
 
             for (const department of departmentData) {
@@ -735,7 +739,7 @@ function Employee() {
             return false;
       }
       
-      
+      //ckeck all the validation by calling validation function in edit modal
       if(isDataFilled(updatedData) && nicValidationEdit(updatedData) && firstNameValidation(updatedData) && lastNameValidation(updatedData) && emailAddressValidation(updatedData) 
       && mobileNumberValidation(updatedData) && dateOfBirthValidation(updatedData) && genderValidation(updatedData) && salaryValidation(updatedData) && departmentValidation(updatedData)){
 
