@@ -928,7 +928,7 @@ function Employee() {
             <Alert variant="danger"  dismissible>
             <Alert.Heading>Oh snap! You got an error! Data is not Loaded</Alert.Heading>
             <p>
-              No data or Servee is not up & runnig at this moment. 
+              No data or Server is not up & runnig at this moment. 
               </p>
               <Button variant="light" onClick={()=>fetchEmployeeData()}>Fetch</Button>
               {/* when the click fetch button in employee component it should call the fetchEmployeeData() */}

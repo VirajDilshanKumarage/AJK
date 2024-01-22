@@ -157,7 +157,7 @@ function Department() {
     
   useEffect(()=>{
         fetchDepartmentData();
-  },[showAdd,showEdit,showDelete,showAlert]) // depend on add,edit,delete,alert 's show State
+  },[showAdd,showEdit,showDelete]) // depend on add,edit,delete,alert 's show State
 
   //handle save new departmnet
   const [departmentCodeSave,setDepartmentCodeSave] = useState('');
@@ -363,37 +363,39 @@ function Department() {
 
     if(isFilled(updateDepartment) && validationDepartmentCode(updateDepartment) && validationDepartmentName(updateDepartment)){
 
-    try{
-      axios.put(put_url,updateDepartment)
-      .then((result=>{
-        handleCloseEdit();
-        clearEdit();
-        clearErrorMessageEdit();
-        //fetchDepartmentData(); add as useEffect dependecy array
-        setdepartmentIdNeedToUpdate(0);
-        toast.success("Department successfully updated");
-       
+        try{
+         
+          axios.put(put_url,updateDepartment)
+          .then((result)=>{
+            handleCloseEdit();
+            clearEdit();
+            clearErrorMessageEdit();
+            //fetchDepartmentData(); add as useEffect dependecy array
+            setdepartmentIdNeedToUpdate(0);
+            toast.success("Department successfully updated");
+          
 
-      }))
+          });
 
-    }catch(error){
-      if (axios.isAxiosError(error)) {
-        // Axios error, check if it's a network error
-        if (error.response) {
-          // The request was made, but the server responded with an error status
-          serverResponseFaliur_1();
-        } else if (error.request) {
-          // The request was made, but no response was received
-          serverResponseFaliur_2();
-        } else {
-          // Something went wrong in setting up the request
-          serverResponseFaliur_3();
+        }catch(error){
+        
+          if (axios.isAxiosError(error)) {
+            // Axios error, check if it's a network error
+            if (error.response) {
+              // The request was made, but the server responded with an error status
+              serverResponseFaliur_1();
+            } else if (error.request) {
+              // The request was made, but no response was received
+              serverResponseFaliur_2();
+            } else {
+              // Something went wrong in setting up the request
+              serverResponseFaliur_3();
+            }
+          } else {
+            // Not an Axios error, handle it accordingly
+            serverResponseFaliur_4();
+          }
         }
-      } else {
-        // Not an Axios error, handle it accordingly
-        serverResponseFaliur_4();
-      }
-    }
     }else{
 
     console.error("Error: validation, handleEdit");
