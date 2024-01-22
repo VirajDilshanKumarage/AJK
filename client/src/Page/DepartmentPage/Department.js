@@ -73,7 +73,7 @@ function Department() {
   const [showAdd, setShowAdd] = useState(false);
   const handleCloseAdd = () => {setShowAdd(false); clearErrorMessageSave()}
   const handleShowAdd = () => {
-    fetchDepartmentData();//just refreshing department data to check the server is up & running ro down
+    //fetchDepartmentData();// add useEffect dependency array //just refreshing department data to check the server is up & running ro down
     setShowAdd(true)
   };
 
@@ -157,7 +157,7 @@ function Department() {
     
   useEffect(()=>{
         fetchDepartmentData();
-  },[])
+  },[showAdd,showEdit,showDelete,showAlert]) // depend on add,edit,delete,alert 's show State
 
   //handle save new departmnet
   const [departmentCodeSave,setDepartmentCodeSave] = useState('');
@@ -194,7 +194,7 @@ function Department() {
 
       //validation for Department code in save modal
       function validationDepartmentCode(data){
-        fetchDepartmentData();
+        //fetchDepartmentData(); add as the useEffect dependency array when open close modal
         for( const department of departmentData){
           if(department.departmentCode.toLowerCase() === data.departmentCode.toLowerCase()){
             setErrorMessageDepartmnetCodeSave('Department code is already used, Enter new one');
@@ -226,7 +226,7 @@ function Department() {
         try {
           const result = await axios.post(post_url, newDepartment);
           handleCloseAdd();
-          fetchDepartmentData();
+          //fetchDepartmentData(); add as the useEffect dependency array
           clearSave();
           clearErrorMessageSave();
           toast.success('New Department Added Successfully');
@@ -327,7 +327,7 @@ function Department() {
 
     //validation for Department code in edit modal
     function validationDepartmentCode(data){
-         fetchDepartmentData();
+        // fetchDepartmentData(); add as useEffect dependency array
         for (const department of departmentData) {
           // Skip the current employee being updated
           if (department.departmentId === departmentIdNeedToUpdate) {
@@ -369,7 +369,7 @@ function Department() {
         handleCloseEdit();
         clearEdit();
         clearErrorMessageEdit();
-        fetchDepartmentData();
+        //fetchDepartmentData(); add as useEffect dependecy array
         setdepartmentIdNeedToUpdate(0);
         toast.success("Department successfully updated");
        
@@ -455,7 +455,7 @@ function Department() {
               console.log(response.data);
               handleCloseDelete();
               setDepartmentIdNeedToDelete(0);
-              fetchDepartmentData();
+              //fetchDepartmentData(); add as useEffect to depend with modal showDelete state
               toast.warning("Department " + _department_name + " deleted permanentl ( Department code: "+_department_code+" )");
             } catch (error) {
               if (axios.isAxiosError(error)) {

@@ -110,11 +110,7 @@ function Employee() {
       }
     }
   }
-
-  useEffect(()=>{
-      fetchDepartmentData(); //to refreshing only the department data
-  },[])
-  /** End fetchDepartmentData()  */
+/** End fetchDepartmentData()  */
 
 
   //base usrl for employee model
@@ -127,7 +123,7 @@ function Employee() {
     setShowAdd(false);
   }
   const handleShowAdd = () => {
-    fetchDepartmentData();//refreshig loaded department details because those details are use in add modal;
+    //fetchDepartmentData(); new comment: -comment this one and to achive expected outcome I add the employeeData in dependency array od useEffect :-fetchEmployeeData //old comment:-- refreshig loaded department details because those details are use in add modal;
     setShowAdd(true);
   }
 
@@ -169,7 +165,7 @@ function Employee() {
   const [errorMessageSalary,setErrorMessageSalary] = useState('');
   const [errorMessageDepartment,setErrorMessageDepartment] = useState('');
 
-  //validation cost in delete modal to check the deletion is confirm or not
+  //validation const in delete modal to check the deletion is confirm or not
   const [errorMessageDeleteConfirmation,setErrorMessageDeleteConfirmation] =useState('');
 
 
@@ -199,6 +195,7 @@ function Employee() {
   const [errorMessageGenderEdit,setErrorMessageGenderEdit] = useState('');
   const [errorMessageSalaryEdit,setErrorMessageSalaryEdit] = useState('');
   const [errorMessageDepartmentEdit,setErrorMessageDepartmentEdit] = useState('');
+
   //clear error message which in edit model
   const clearErrorMessageEdit=()=>{
     setErrorMessageEdit('');
@@ -236,7 +233,7 @@ function Employee() {
   const [salaryEdit,setSalaryEdit] = useState(0.0);
   const [departmentIdEdit,setDepartmentIdEdit] = useState(0);
 
-  //validation pattern 
+  //validation pattern  regular expression
   const PatternForNewNic = /^\d{12}$/;                  // eg: 976756458v
   const PatternForOldNic = /^\d{9}v$/;                  // eg: 200018201577
   const PatternForFirstAndLastNames=/^[a-zA-Z]+$/;      // eg: Viarj
@@ -310,7 +307,14 @@ function Employee() {
 
   useEffect(()=>{
        fetchEmployeeData(); //refresh the employee data only without refreshing whole web page:- using useEffect
-  },[])
+       console.log("refreshing employee's data");
+  },[showAdd,showEdit,showDelete])
+
+  useEffect(()=>{
+    fetchDepartmentData(); //to refreshing only the department data
+    console.log("refreshing department's data");
+  },[showAdd,showEdit,showDelete])
+
 
 
  
@@ -352,10 +356,8 @@ function Employee() {
           
           //validation for nic number in add modal
           function nicValidation(data){
-              
-              
               //check entered nic number is already used or not 
-              fetchEmployeeData();
+              //fetchEmployeeData(); comment this one and to achive expected outcome I add the employeeData in dependency array od useEffect :-fetchEmployeeData
               for (const employee of employeeData) {
                 if (employee.nicNumber === data.nicNumber) {
                     setErrorMessageNIC("NIC already used by another employee");
@@ -477,7 +479,7 @@ function Employee() {
 
           //validation for department field add modal
           function departmentValidation(data) {
-            fetchDepartmentData();
+           // fetchDepartmentData(); // add as the dependency in dependency array of useEffect
             console.log(departmentData);
         
             if (departmentData && departmentData.length > 0) {
@@ -506,7 +508,7 @@ function Employee() {
 
                 try {
                   const result = await axios.post(post_url, data);
-                  fetchEmployeeData();
+                 // fetchEmployeeData(); // add useEffect to achive the process of refreshin employee data
                   handleCloseAdd();
                   clearSave();
                   toast.success('New employee added successfully');
@@ -776,7 +778,7 @@ function Employee() {
 
         try {
           const result = await axios.put(put_url, updatedData);
-          fetchEmployeeData();
+          //fetchEmployeeData(); add to useEffect 
           clearEdit();
           toast.success('Update successful');
         } catch (error) {
@@ -821,9 +823,7 @@ function Employee() {
   const [deleteConfirmation,setDeleteConfirmation] =useState('');//set delete conformation string;
   //deleting 
   const handleDelete = async ()=>{
-    
-      
-       
+  
       const delete_url =`${baseUrlEmployee}/deleteEmployee/${empIDToDelete}`; 
       
       if(deleteConfirmation.toLowerCase()=='confirm'){
@@ -834,7 +834,7 @@ function Employee() {
           const result = await axios.delete(delete_url);
           
           console.log(result);
-          fetchEmployeeData();
+          //fetchEmployeeData(); add useEffect to refreshing
           setempIDToDelete(0); // reset the employeeIDToDelete
           handleCloseDelete();
           toast.warning('Employee is permanently deleted');
