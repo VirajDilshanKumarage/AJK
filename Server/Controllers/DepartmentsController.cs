@@ -202,10 +202,5 @@ namespace DepartmentsController.Controllers{
 
     }
 
-    internal class GetDepartmentById
-    {
-        public GetDepartmentById()
-        {
-        }
-    }
+    
 }

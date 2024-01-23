@@ -83,11 +83,13 @@ function Department() {
   const handleShowEdit = () => setShowEdit(true);
 
   //const for Delete department modal
+  const [NameOfDepartmentToDelete,setNameOfDepartmentToDelete] =useState('');
   const [showDelete, setShowDelete] = useState(false);
   const handleCloseDelete = () => {
     setDeleteConfirmation('');
     setErrorMessageDeleteConfirmation('');
     setShowDelete(false)
+    setNameOfDepartmentToDelete('');
   };
   const handleShowDelete = () => setShowDelete(true);
 
@@ -588,7 +590,7 @@ function Department() {
                                   <td>{department.departmentName}</td>
                                   <td className="d-flex justify-content-center align-items-center">
                                       <Button variant='primary' onClick={()=>{getDepartmentById(department.departmentId); setdepartmentIdNeedToUpdate(department.departmentId); handleShowEdit()}} >Edit<BsPencil className='m-1'/></Button> &nbsp;
-                                      <Button variant='danger' onClick={()=>{setDepartmentIdNeedToDelete(department.departmentId); handleShowDelete();}}>Delete<BsTrash className='m-1'/></Button>
+                                      <Button variant='danger' onClick={()=>{setDepartmentIdNeedToDelete(department.departmentId); setNameOfDepartmentToDelete(" "+department.departmentName+" (Depcode: "+department.departmentCode+")"); handleShowDelete();}}>Delete<BsTrash className='m-1'/></Button>
                                   </td>
                               </tr>
                         ):""
@@ -698,6 +700,8 @@ function Department() {
                     </Modal.Header>
                     <Modal.Body>Do you need to permernatly delete this Department information ? if so just type as '<span style={{color:'red'}}>confirm</span>' then click ok
                         <div>
+                          <br></br>
+                          <div>You'r going to delete<span style={{color:'red',fontStyle:'bold'}}>{NameOfDepartmentToDelete}</span></div>
                           <Form.Control
                                       type="text"
                                       id="deleteConfirmation"

@@ -21,17 +21,16 @@ function Home() {
   return (
     <>
     
-    <div>
-      <div className='home_content '>
-        <div>
-          <h3 className='d-flex justify-content-center align-items-center'>welcome</h3>
-          <p className='d-flex justify-content-center align-items-center'>' Hello There '<span><HiHand/></span></p>
-        </div>
+    <div  className='home_content '>
+      <div className='mb-5 text-center'>
+            <h3 className='mb-3'>Welcome</h3>
+            <p>`Hello There` <span><HiHand/></span></p>
+            <hr className='mb-4'  style={{ borderColor: '#3498db' }} />
+            <img src={homeImage} className='home_image' alt='Home' />
       </div>
-      <div>
-        <img src={homeImage} className='position-absolute top-50 start-50 translate-middle w-40 h-50' id='HomeImage'></img>
-      </div>
-    </div></>
+    </div>
+    
+    </>
   
   )
 }

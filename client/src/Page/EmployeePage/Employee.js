@@ -134,11 +134,13 @@ function Employee() {
   const handleShowEdit = () => setShowEdit(true);
 
   //delete modal
+  const [NameOfEmployeeToDelete, setNameOfEmployeeToDelete] =useState(''); //set the fullname to get full name of an employee
   const [showDelete, setShowDelete] = useState(false);
   const handleCloseDelete = () => {
     setDeleteConfirmation('');
     setErrorMessageDeleteConfirmation('');
     setShowDelete(false)
+    setNameOfEmployeeToDelete('');
   };
   const handleShowDelete = () => setShowDelete(true);
 
@@ -324,7 +326,7 @@ function Employee() {
       
           const post_url =`${baseUrlEmployee}/saveNewEmployee`; // end point
           const data = {
-          "nicNumber": nicNumberSave,
+          "nicNumber": nicNumberSave.toLowerCase(),
           "firstName": firstNameSave,
           "lastName": lastNameSave,
           "emailAddress": emailAddressSave,
@@ -545,7 +547,6 @@ function Employee() {
 
 
  //get employee by id
-  const [NameOfEmployee, setNameOfEmployee] =useState(''); //set the fullname to get full name of an employee
   const getEmployeeById =async (_employeeId)=>{
     const getById_url =`${baseUrlEmployee}/getEmployeeById/${_employeeId}`;
       try{
@@ -563,7 +564,7 @@ function Employee() {
         setGenderEdit(employee.gender); // Fix: Use setGender instead of setDateOfBirth
         setSalaryEdit(employee.salary);
         setDepartmentIdEdit(employee.departmentName); // Fix: Use setDepartment instead of setEmailAddress
-        setNameOfEmployee(employee.firstName+" "+employee.lastName);
+        
         }
         
       
@@ -607,7 +608,7 @@ function Employee() {
   
       const updatedData={
         
-          "nicNumber": nicNumberEdit,
+          "nicNumber": nicNumberEdit.toLowerCase(),
           "firstName": firstNameEdit,
           "lastName": lastNameEdit,
           "emailAddress": emailAddressEdit,
@@ -838,7 +839,7 @@ function Employee() {
           setempIDToDelete(0); // reset the employeeIDToDelete
           handleCloseDelete();
           toast.warning('Employee is permanently deleted');
-          setNameOfEmployee(null);
+          setNameOfEmployeeToDelete('');
           
         } catch (error) {
           if (axios.isAxiosError(error)) {
@@ -889,7 +890,7 @@ function Employee() {
               <th className="text-center">last name</th>
               <th className="text-center">email</th>
               <th className="text-center">mobile</th>
-              <th className="text-center">birthday</th>
+              <th className="text-center"><span style={{color:'gray',fontSize:'10px'}}>DD / MM / YYYY</span><br></br>birthday</th>
               <th className="text-center">age</th>
               <th className="text-center">gender</th>
               <th className="text-center">salary</th>
@@ -906,14 +907,14 @@ function Employee() {
                   <td>{employee.lastName}</td>
                   <td>{employee.emailAddress}</td>
                   <td>{employee.mobileNumber}</td>
-                  <td>{new Date(employee.dateOfBirth).toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}</td>
+                  <td>{new Date(employee.dateOfBirth).toLocaleDateString('en-GB', { year: 'numeric', month: 'numeric', day: 'numeric' })}</td>
                   <td>{employee.age}</td>
                   <td>{employee.gender}</td>
                   <td>{employee.salary.toFixed(2)}</td>
                   <td>{employee.departmentName}<div style={{color:'gray',fontSize:'15px'}}>code: {employee.departmentCode}</div></td>
                   <td colSpan={2} className="d-flex justify-content-center align-items-center">
-                    <Button variant="primary" onClick={() => handleEdit(employee.employeeId)}>Edit<BsPencil className='m-1'/></Button> &nbsp;
-                    <Button variant="danger" onClick={() => { setempIDToDelete(employee.employeeId); handleShowDelete();}}>Delete <BsTrash className='m-1'/></Button>
+                    <Button variant="primary" onClick={() => handleEdit(employee.employeeId)}>Edit<BsPencil className='m-1'/></Button> &nbsp; 
+                    <Button variant="danger" onClick={() => { setempIDToDelete(employee.employeeId); handleShowDelete(); setNameOfEmployeeToDelete(employee.firstName+" "+employee.lastName+" (NIC: "+employee.nicNumber+")")}}>Delete <BsTrash className='m-1'/></Button>
                   </td>
                 </tr>
               ))
@@ -1275,7 +1276,9 @@ function Employee() {
             <Modal.Title>Delete Employee</Modal.Title>
           </Modal.Header>
           <Modal.Body>Do you need to permernatly delete this employee ? if so just type as '<span style={{color:'red'}}>confirm</span>' then click ok
-          <div>
+          <div>   
+                  <br></br>
+                  <div>You'r going to delete <span style={{color:'red', fontSize:'bold'}}>{NameOfEmployeeToDelete}</span></div>
                   <Form.Control
                               type="text"
                               id="deleteConfirmation"

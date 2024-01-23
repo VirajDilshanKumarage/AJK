@@ -13,17 +13,14 @@ import Logo from '../../asset/keells_logo.ico';
 function Navigationbar() {
   return (
 
-    <Navbar bg="dark" data-bs-theme="dark"  >
-      <img src={Logo} className='Logo' />
-        <Container className='Container'>
-          {/* <Navbar.Brand>John Keells</Navbar.Brand> */}
-          <Nav className="me-auto">
-            <Nav.Link href="/" className="underline-on-hover">Home</Nav.Link>
-            <Nav.Link href="/Employee" className="underline-on-hover">Employee</Nav.Link>
-            <Nav.Link href="/Department" className="underline-on-hover">Department</Nav.Link>
-          </Nav>
-        </Container>
-      </Navbar>
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <img src={Logo} className='Logo' alt="Logo" />
+    <ul className="navbar-nav ml-auto">
+      <li className='nav-item'><Link to={"/"} className="nav-link">Home</Link></li>
+      <li className='nav-item'><Link to={"/Employee"} className="nav-link">Employee</Link></li>
+      <li className='nav-item'><Link to={"/Department"} className="nav-link">Department</Link></li>
+    </ul>
+  </nav>
   )
 }
 

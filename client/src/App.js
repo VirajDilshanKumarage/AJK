@@ -17,14 +17,15 @@ function App() {
        callFetchEmployeeInEmployeeComponet = {Employee().fetchEmployeeData}
        callFetchDepartmentInDepartmentComponent = {Department().fetchDepartmentData}
    />
-   <Navigationbar/>
+   
       <Router>
-      <Routes>
-         <Route path='/' element={<Home/>} />
-         <Route path='/Employee' element={<Employee/>}/>
-         <Route path='/Department' element={<Department />}/>
-      </Routes>
-    </Router>
+      <Navigationbar/>
+        <Routes>
+          <Route path='/' element={<Home/>} />
+          <Route path='/Employee' element={<Employee/>}/>
+          <Route path='/Department' element={<Department />}/>
+        </Routes>
+      </Router>
     
     </>
     
